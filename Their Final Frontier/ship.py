@@ -6,6 +6,11 @@ from lagrange import Lagrange
 
 class Ship(Entity):
     
+    ship_waypoints = []
+    waypoint_index = []
+    moving_flag = False
+    tmp_x = 0
+    
     def __init__(self, x=0, y=0, width=50, height=50, velocity=1, direction=0, lagrange = 0):
         image = pygame.image.load("assets\ship\ship.png")       
         super().__init__(x, y, width, height, direction, image)
@@ -13,9 +18,15 @@ class Ship(Entity):
         self.lagrange = lagrange
 
 
-    def update(self):
-        x,y = pygame.mouse.get_pos()
-        self.move_ship(x,y)
+    def update(self):  #TODO: change this, testing code only
+        
+        if self.moving_flag:
+            self.tmp_x +=0.5    
+            self.move_ship(self.tmp_x,self.lagrange.lagrange(self.x))
+        pass
+    
+    def update_waypoint(self, x, y): # TODO: very iffy on this as well
+        self.lagrange.add_point(x,y)
         
         
     def move_ship(self, target_x, target_y):

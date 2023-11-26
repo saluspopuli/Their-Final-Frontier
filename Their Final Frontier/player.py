@@ -3,6 +3,7 @@ import math
 
 # Import the entity class
 from entity import Entity
+from waypoint import Waypoint
 
 class Player(Entity):
     
@@ -12,6 +13,7 @@ class Player(Entity):
     tmp_rad = 0
     dir_cos = 0
     dir_sin = 0
+    spacebar_pressed = False
     
     def __init__(self, x=0, y=0, width=50, height=50, velocity = 0, direction=0, turn_velocity= 1):
         image = pygame.image.load("assets\player\player.png")       
@@ -53,7 +55,7 @@ class Player(Entity):
             
         if keys[pygame.K_d]:
             self.direction -= self.turn_velocity
-    
+
             
     def pull(self, direction, velocity):
         

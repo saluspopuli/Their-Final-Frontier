@@ -3,6 +3,7 @@ import math
 from player import Player
 from ship import Ship
 from lagrange import Lagrange
+from waypoint import Waypoint
 
 # Pygame stuff ========================================================================
 pygame.init()
@@ -18,11 +19,11 @@ pygame.display.set_caption("Their Final Frontier")
 window_icon = pygame.image.load("assets\window_icon.png")  # Update the file path here
 pygame.display.set_icon(window_icon)
 
-# Object initialization ================================================================
-lagrange = Lagrange()
+# Object initialization ======================================a==========================
+player = Player(280, 300)
+ship = Ship(0,400,width=150,height=150,lagrange=Lagrange([],[]))
 
-entities = [Player (280, 300),
-            Ship(300,400,width=150,height=150, lagrange=lagrange)]
+entities = [player,ship]
 
 # FUNCTIONS ===========================================================================
 def update():
@@ -36,6 +37,7 @@ def render(screen):
 # MAIN ================================================================================
 if __name__ == "__main__":
     # Main game loop
+
     running = True
     while running:
         
@@ -48,7 +50,14 @@ if __name__ == "__main__":
             # Quits game if pygame detects the quit event type
             if event.type == pygame.QUIT:
                 running = False
-        
+                
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                entities.append(Waypoint(player.x,player.y))
+                ship.update_waypoint(player.x, player.y)
+                
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_p: #TODO: placeholder
+                ship.moving_flag = True
+            
         update()
         render(screen)
                 
