@@ -1,8 +1,7 @@
 class Lagrange:
     
-    def __init__(self, x_values = [], y_values= []):
-        self.x_values = x_values
-        self.y_values = y_values
+    def __init__(self, coordinates[]):
+        self.coordinates = coordinates
 
     # n = number of points to consider
     def lagrange(self, x, n):   
