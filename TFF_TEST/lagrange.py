@@ -7,5 +7,6 @@ class Interpolation:
 
     def interpolate(self, x):
         # TODO: Implement interpolation logic here using lagrange method
+        interpolated_val = 0
         
         return interpolated_val
