@@ -1,4 +1,4 @@
-## Numerical-Methods-Project
+## Numerical Methods Project
 # Their Final Frontier
 
 Google docs link (use USC account):
