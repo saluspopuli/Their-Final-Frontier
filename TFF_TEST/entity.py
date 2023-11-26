@@ -18,4 +18,3 @@ class Entity:
         rotated_image = pygame.transform.rotate(self.scaled_image, self.direction)
         rotated_rect = rotated_image.get_rect(center=(self.x, self.y))
         screen.blit(rotated_image, rotated_rect)
-        pass
