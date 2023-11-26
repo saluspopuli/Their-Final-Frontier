@@ -1,6 +1,7 @@
 import pygame
 import math
 from player import Player
+from ship import Ship
 
 # Other variables
 clock = pygame.time.Clock()
@@ -8,7 +9,7 @@ FPS = 60
 
 # Player initialization
 player = Player(280, 300)
-
+ship = Ship(300,400,width=150,height=150)
 #initializes pygame somehow
 pygame.init()
 
@@ -34,6 +35,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     
+    ship.render(screen)
     player.update()
     player.render(screen)
             
