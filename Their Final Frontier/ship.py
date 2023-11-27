@@ -6,10 +6,10 @@ from lagrange import Lagrange
 
 class Ship(Entity):
     
-    ship_waypoints = []
-    waypoint_index = []
+    waypoint_line = [0]
     moving_flag = False
     tmp_x = 0
+    lagrange_points = 5
     
     def __init__(self, x=0, y=0, width=50, height=50, velocity=1, direction=0, lagrange = 0):
         image = pygame.image.load("assets\ship\ship.png")       
@@ -22,12 +22,8 @@ class Ship(Entity):
         
         if self.moving_flag:
             self.tmp_x +=0.5    
-            self.move_ship(self.tmp_x,self.lagrange.lagrange(self.x))
-        pass
-    
-    def update_waypoint(self, x, y): # TODO: very iffy on this as well
-        self.lagrange.add_point(x,y)
-        
+            self.move_ship(self.tmp_x,self.lagrange.lagrange(self.x,self.lagrange_points))
+        pass  
         
     def move_ship(self, target_x, target_y):
         # Calculate the direction to target
@@ -50,3 +46,25 @@ class Ship(Entity):
 
         self.x += velocity * dir_cos
         self.y += velocity * dir_sin 
+    
+    def change_lagrange_points(self, dir, screenX):
+        if dir:
+            self.lagrange_points += 1
+        else:
+            self.lagrange_points -= 1
+        
+        self.draw_waypoint_line(screenX)
+    
+    def draw_waypoint_line(self, screenX):
+        self.waypoint_line = []
+        for x in range(screenX): #change the range puhon
+            self.waypoint_line.append(self.lagrange.lagrange(x,self.lagrange_points))
+
+    def render(self, screen):
+        
+        for x in range(len(self.waypoint_line)):
+            pygame.draw.circle(screen, (255,255,255), (x,self.waypoint_line[x]), 2)
+            
+        rotated_image = pygame.transform.rotate(self.scaled_image, self.direction)
+        rotated_rect = rotated_image.get_rect(center=(self.x, self.y))
+        screen.blit(rotated_image, rotated_rect)

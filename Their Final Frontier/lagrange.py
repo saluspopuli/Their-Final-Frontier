@@ -1,53 +1,46 @@
+import random #TODO: GET RID OF THIS
+
 class Lagrange:
     
-    #initiate map
-    data_points = {}
+    indices = []
     
-    def __init__(self, x_val, y_val):
-        self.x_val = x_val
-        self.y_val = y_val
-             
-        #Stores the x values in a hash map 
-        for x, y in zip(self.x_val, self.y_val):
-            self.data_points[x] = y
-            
+    def __init__(self, coordinates):
+        self.coordinates = coordinates
+        self.coordinates = sorted(self.coordinates, key=lambda coord: coord[0])
+        self.indices = list(range(len(self.coordinates)))
 
     #Use another arg name for X as x is used for other things. 
-    def lagrange(self, target_x, n=100):
+    def lagrange(self, target_x, n): 
         
-        if n > len(self.x_val):
-            n = len(self.x_val)
-            
-        lagrange_val = 0 
+        lagrange_val = 0
         
-        # Sort the x values based on the absolute difference from the target_x
-        sorted_x_val = sorted(self.x_val, key=lambda x: abs(x - target_x))
-        # Stores the first n values to the points nearest.
-        points_nearest = sorted_x_val[:n]  
+        if n > len(self.coordinates):
+            n = len(self.coordinates)
         
-        #This is a pretty slow algo, can be better but placeholder for now. 
+        root_index = len(self.coordinates)-1
+        for i, coord in enumerate(self.coordinates):
+            if coord[0] > target_x: 
+                root_index = i
+                break
+        
+        sorted_indices = sorted(self.indices, key=lambda idx: abs(idx - root_index))
         for i in range(n):
-            #Getting Li
+            # Getting Li
             li_var = 1 
             for j in range(n):  
                 if j != i:   
-                    updated_li_var = (target_x - points_nearest[j])/(points_nearest[i] - points_nearest[j])
+                    updated_li_var = (target_x - self.coordinates[sorted_indices[j]][0]) / (self.coordinates[sorted_indices[i]][0] - self.coordinates[sorted_indices[j]][0])
                     li_var *= updated_li_var
-                else:
-                    continue
-            #Getting Lagrange. f(x) = Li(x)f(Xi) where f(X) = target_y.
-            target_y = (li_var) * (self.data_points.get(points_nearest[i], None))
+            
+            # Getting Lagrange. f(x) = Li(x)f(Xi) where f(X) = target_y.
+            target_y = li_var * self.coordinates[sorted_indices[i]][1]
             lagrange_val += target_y
             
         return lagrange_val
+    
 
     def add_point(self, x, y):
         
-        self.data_points = {}
-        
-        self.x_val.append(x)
-        self.y_val.append(y)
-        
-        #Stores the x values in a hash map 
-        for x, y in zip(self.x_val, self.y_val):
-            self.data_points[x] = y
+        self.coordinates.append((x,y))
+        self.coordinates = sorted(self.coordinates, key=lambda coord: coord[0])
+        self.indices = list(range(len(self.coordinates)))

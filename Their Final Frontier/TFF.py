@@ -12,7 +12,9 @@ clock = pygame.time.Clock()
 FPS = 60
 
 # Creates the display
-screen = pygame.display.set_mode((800,600))
+screenX = 1500
+screenY = 600
+screen = pygame.display.set_mode((screenX,screenY))
 
 # Title and Icon
 pygame.display.set_caption("Their Final Frontier")
@@ -21,9 +23,11 @@ pygame.display.set_icon(window_icon)
 
 # Object initialization ======================================a==========================
 player = Player(280, 300)
-ship = Ship(0,400,width=150,height=150,lagrange=Lagrange([],[]))
+ship = Ship(0,400,width=150,height=150,lagrange=Lagrange([(0,screenY/2)]))
 
 entities = [player,ship]
+
+font = pygame.font.Font(None, 36)
 
 # FUNCTIONS ===========================================================================
 def update():
@@ -42,6 +46,7 @@ if __name__ == "__main__":
     while running:
         
         clock.tick(FPS)
+        print("Current FPS: ", clock.get_fps())
         screen.fill((0,0,0)) #just draws black
         
         # Ensures that all events in the game are run
@@ -53,17 +58,25 @@ if __name__ == "__main__":
                 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 entities.append(Waypoint(player.x,player.y))
-                ship.update_waypoint(player.x, player.y)
-                
+                ship.lagrange.add_point(player.x,player.y)
+                ship.draw_waypoint_line(screenX)
+            
+            # EVENTS FOR DEBUGGING ===============================================================  
             if event.type == pygame.KEYDOWN and event.key == pygame.K_p: #TODO: placeholder
                 ship.moving_flag = True
             
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT: #TODO: placeholder
+                ship.change_lagrange_points(False, screenX)
+                
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT: #TODO: placeholder
+                ship.change_lagrange_points(True, screenX)
+         
+        text = font.render("Lagrange points: " + str(ship.lagrange_points), True, (255, 255, 255))
+        screen.blit(text, (20,20))       
         update()
         render(screen)
                 
         pygame.display.update()
-
-
 
     
     
