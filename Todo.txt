@@ -1,2 +1,3 @@
 Todo:
-    - Proper Civ Ship waypoint tracking
+    - Move the game logic into its own class so that I can modularize it and separate
+      it from the menu

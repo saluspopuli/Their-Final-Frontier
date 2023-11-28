@@ -87,7 +87,8 @@ class Ship(Entity):
             x = self.waypoint_line[i]
             x_prev = self.waypoint_line[i-1]
             
-            pygame.draw.line(screen, (255,255,255), (x_prev[0], x_prev[1]), (x[0], x[1]), 2)
+            #pygame.draw.circle(screen, (255,255,255), (x[0], x[1]), 2)
+            pygame.draw.line(screen, (255,255,255), (x_prev[0], x_prev[1]), (x[0], x[1]), 3)
         
         # TODO: probably just delete this
         # Goes across the entire waypoint list and changes one line into green for a single
