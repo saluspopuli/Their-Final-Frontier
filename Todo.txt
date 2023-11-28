@@ -1,3 +1,2 @@
 Todo:
     - Proper Civ Ship waypoint tracking
-    - Line drawing between interpolated points

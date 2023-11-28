@@ -7,6 +7,8 @@ from lagrange import Lagrange
 class Ship(Entity):
     
     waypoint_line = [0]
+    follow_index = 0
+    follow_points = []
     moving_flag = False
     tmp_x = 0
     lagrange_points = 5
@@ -20,10 +22,15 @@ class Ship(Entity):
 
     def update(self):  #TODO: change this, testing code only
         
+        if self.follow_index > len(self.follow_points):
+            self.follow_index = len (self.follow_points)
+            
         if self.moving_flag:
-            self.tmp_x +=0.5    
-            self.move_ship(self.tmp_x,self.lagrange.lagrange(self.x,self.lagrange_points))
-        pass  
+            tmpcoord = self.follow_points[self.follow_index]
+            self.move_ship(tmpcoord[0],tmpcoord[1])
+            print(tmpcoord) #TODO: REMOVE
+            if (self.x - tmpcoord[0]) > -0.1:
+                self.follow_index += 1
         
     def move_ship(self, target_x, target_y):
         # Calculate the direction to target
@@ -54,12 +61,18 @@ class Ship(Entity):
             self.lagrange_points -= 1
         
         self.draw_waypoint_line(screenX)
+        self.create_follow_points(screenX)
     
     def draw_waypoint_line(self, screenX):
         self.waypoint_line = []
         for x in range(screenX): #change the range puhon
             self.waypoint_line.append(self.lagrange.lagrange(x,self.lagrange_points))
 
+    def create_follow_points(self, screenX):
+        self.follow_points = []
+        for x in range(0, screenX*+200, 5):
+            self.follow_points.append((x,self.lagrange.lagrange(x,self.lagrange_points)))
+               
     def render(self, screen):
         
         for x in range(len(self.waypoint_line)):

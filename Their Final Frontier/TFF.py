@@ -17,7 +17,7 @@ screenY = 600
 screen = pygame.display.set_mode((screenX,screenY))
 
 # Title and Icon
-pygame.display.set_caption("Their Final Frontier")
+pygame.display.set_caption("Their Final Frontier Alpha")
 window_icon = pygame.image.load("assets\window_icon.png")  # Update the file path here
 pygame.display.set_icon(window_icon)
 
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     while running:
         
         clock.tick(FPS)
-        print("Current FPS: ", clock.get_fps())
+        # print("Current FPS: ", clock.get_fps())
         screen.fill((0,0,0)) #just draws black
         
         # Ensures that all events in the game are run
@@ -60,6 +60,7 @@ if __name__ == "__main__":
                 entities.append(Waypoint(player.x,player.y))
                 ship.lagrange.add_point(player.x,player.y)
                 ship.draw_waypoint_line(screenX)
+                ship.create_follow_points(screenX)
             
             # EVENTS FOR DEBUGGING ===============================================================  
             if event.type == pygame.KEYDOWN and event.key == pygame.K_p: #TODO: placeholder
