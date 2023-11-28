@@ -1,5 +1,4 @@
 import pygame
-import math
 from player import Player
 from ship import Ship
 from lagrange import Lagrange
@@ -35,7 +34,7 @@ def update():
         entity.update()
     
 def render(screen):
-    for entity in entities:
+    for entity in reversed(entities):
         entity.render(screen)
 
 # MAIN ================================================================================
@@ -60,7 +59,6 @@ if __name__ == "__main__":
                 entities.append(Waypoint(player.x,player.y))
                 ship.lagrange.add_point(player.x,player.y)
                 ship.draw_waypoint_line(screenX)
-                ship.create_follow_points(screenX)
             
             # EVENTS FOR DEBUGGING ===============================================================  
             if event.type == pygame.KEYDOWN and event.key == pygame.K_p: #TODO: placeholder
