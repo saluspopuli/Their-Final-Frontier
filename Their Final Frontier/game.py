@@ -36,7 +36,7 @@ class Game():
         self.FPS = FPS
         self.font = pygame.font.Font(None, 36)
         
-        self.init_debris(10, "amongus") #TODO: move this 
+        self.init_debris(20, "aasda") #TODO: move this 
 
     # FUNCTIONS ===========================================================================
     def update(self):
@@ -67,7 +67,7 @@ class Game():
             i += 1
 
         for i in range(number):
-            scale = random.randrange(50, 80)
+            scale = random.randrange(50, 100)
             self.entities.append(
                 Debris(
                     random.randrange(150, self.screenX),

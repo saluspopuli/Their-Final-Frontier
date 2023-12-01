@@ -7,6 +7,7 @@ from lagrange import Lagrange
 class Ship(Entity):
     
     waypoint_line = [(0,0)]
+    tmp_waypoint_line = [(0,0)]
     waypoint_step = 5
     lagrange_points = 5
     waypoint_line_render_index = 1
@@ -78,6 +79,9 @@ class Ship(Entity):
     
     def draw_waypoint_line(self, screenX):
         # Empties the waypoint line array
+        self.tmp_waypoint_line = []
+        self.tmp_waypoint_line = self.waypoint_line
+        
         self.waypoint_line = []
         
         # Creates a list of points from the left side of the screen to the right side
@@ -90,6 +94,7 @@ class Ship(Entity):
         
         # Draws lines from x-1 point to x point for all lines in the waypoint_line list.
         # Obviously, it cannot start at zero because x-1 would not exist then
+        
         for i in range(1, len(self.waypoint_line)):
             x = self.waypoint_line[i]
             x_prev = self.waypoint_line[i-1]
