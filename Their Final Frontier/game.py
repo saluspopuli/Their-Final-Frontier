@@ -29,6 +29,8 @@ class Game():
                          lagrange=Lagrange([(0,screenY/2)]),
                          direction = 270)
         
+        self.ship.init_tmp_waypoint_line(screenX)
+        
         self.player = Player(self.init_player_pos[0], screenY/2, direction=self.init_player_dir)
         self.entities = [self.player,self.ship]
         self.screen = screen
@@ -36,7 +38,7 @@ class Game():
         self.FPS = FPS
         self.font = pygame.font.Font(None, 36)
         
-        self.init_debris(20, "aasda") #TODO: move this 
+        self.init_debris(10, "aasda") #TODO: move this 
 
     # FUNCTIONS ===========================================================================
     def update(self):
@@ -68,7 +70,8 @@ class Game():
 
         for i in range(number):
             scale = random.randrange(50, 100)
-            self.entities.append(
+            self.entities.insert(
+                0,
                 Debris(
                     random.randrange(150, self.screenX),
                     random.randrange(150, self.screenY),
@@ -97,9 +100,10 @@ class Game():
                     self.running['value'] = False
                     
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                    self.entities.append(Waypoint(self.player.x,self.player.y))
-                    self.ship.lagrange.add_point(self.player.x,self.player.y)
-                    self.ship.draw_waypoint_line(self.screenX)
+                    if (self.player.x, self.player.y) not in self.ship.lagrange.coordinates:
+                        self.entities.append(Waypoint(self.player.x,self.player.y))
+                        self.ship.lagrange.add_point(self.player.x,self.player.y)
+                        self.ship.draw_waypoint_line(self.screenX)
                 
                 # EVENTS FOR DEBUGGING ===============================================================  
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_p: #TODO: placeholder
@@ -111,7 +115,9 @@ class Game():
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT: #TODO: placeholder
                     self.ship.change_lagrange_points(True, self.screenX)
             
+            # TODO: get rid of these puhon
             text = self.font.render("Lagrange points: " + str(self.ship.lagrange_points), True, (255, 255, 255))
+            
             self.screen.blit(text, (20,20))       
             self.update()
             self.render(self.screen)

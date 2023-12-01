@@ -44,10 +44,11 @@ class Lagrange:
 
     # Adds a data point 
     def add_point(self, x, y):
-        
-        # Adds new x and y values to the coordinates list
-        self.coordinates.append((x,y))
-        # Sorts the coordinates with respect to the x value
-        self.coordinates = sorted(self.coordinates, key=lambda coord: coord[0])
-        # Updates the list of indices for the coordinates list
-        self.indices = list(range(len(self.coordinates)))
+        # Check if the new (x, y) values already exist in the coordinates list
+        if (x, y) not in self.coordinates:  
+            # Adds new x and y values to the coordinates list
+            self.coordinates.append((x, y))
+            # Sorts the coordinates with respect to the x value
+            self.coordinates = sorted(self.coordinates, key=lambda coord: coord[0])
+            # Updates the list of indices for the coordinates list
+            self.indices = list(range(len(self.coordinates)))

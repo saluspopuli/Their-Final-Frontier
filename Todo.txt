@@ -1,3 +1,5 @@
 Todo:
-    - Move the game logic into its own class so that I can modularize it and separate
-      it from the menu
+    - Redo the entity class and all other entities so that it can load in a list
+    of sprites instead of just one sprite
+    - Do the main menu
+    - Make it so that game.py can be restarted and settings can be changed

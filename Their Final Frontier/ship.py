@@ -7,7 +7,7 @@ from lagrange import Lagrange
 class Ship(Entity):
     
     waypoint_line = [(0,0)]
-    tmp_waypoint_line = [(0,0)]
+    tmp_waypoint_line = []
     waypoint_step = 5
     lagrange_points = 5
     waypoint_line_render_index = 1
@@ -78,10 +78,7 @@ class Ship(Entity):
         self.draw_waypoint_line(screenX)
     
     def draw_waypoint_line(self, screenX):
-        # Empties the waypoint line array
-        self.tmp_waypoint_line = []
-        self.tmp_waypoint_line = self.waypoint_line
-        
+        # Empties the waypoint line array     
         self.waypoint_line = []
         
         # Creates a list of points from the left side of the screen to the right side
@@ -89,18 +86,26 @@ class Ship(Entity):
         # every x value)
         for x in range(0, screenX + 200, self.waypoint_step):
             self.waypoint_line.append((x,self.lagrange.lagrange(x,self.lagrange_points)))
-               
+    
+    def init_tmp_waypoint_line(self, screenX):
+        for x in range(0, screenX + 200, self.waypoint_step):
+            self.tmp_waypoint_line.append([x,-10])
+                 
     def render(self, screen):
         
-        # Draws lines from x-1 point to x point for all lines in the waypoint_line list.
-        # Obviously, it cannot start at zero because x-1 would not exist then
-        
-        for i in range(1, len(self.waypoint_line)):
-            x = self.waypoint_line[i]
-            x_prev = self.waypoint_line[i-1]
+        if len(self.waypoint_line) == len(self.tmp_waypoint_line):
+            for i in range(0, len(self.tmp_waypoint_line)):
+                self.tmp_waypoint_line[i][1] -= (self.tmp_waypoint_line[i][1] - self.waypoint_line[i][1])/5
             
-            #pygame.draw.circle(screen, (255,255,255), (x[0], x[1]), 2)
-            pygame.draw.line(screen, (255,255,255), (x_prev[0], x_prev[1]), (x[0], x[1]), 3)
+            # Draws lines from x-1 point to x point for all lines in the waypoint_line list.
+            # Obviously, it cannot start at zero because x-1 would not exist then    
+            for i in range(1, len(self.tmp_waypoint_line)):
+                        
+                x = self.tmp_waypoint_line[i]
+                x_prev = self.tmp_waypoint_line[i-1]
+                
+                #pygame.draw.circle(screen, (255,255,255), (x[0], x[1]), 2)
+                pygame.draw.line(screen, (255,255,255), (x_prev[0], x_prev[1]), (x[0], x[1]), 3)
         
         # TODO: probably just delete this
         # Goes across the entire waypoint list and changes one line into green for a single
@@ -116,7 +121,7 @@ class Ship(Entity):
             self.waypoint_line_render_index = 1
         
         # Renders the ship image normally       
-        rotated_image = pygame.transform.rotate(self.scaled_image, self.direction)
+        rotated_image = pygame.transform.rotate(self.scaled_image[self.state], self.direction)
         rotated_rect = rotated_image.get_rect(center=(self.x, self.y))
         screen.blit(rotated_image, rotated_rect)
         

@@ -36,12 +36,17 @@ class Player(Entity):
             tmp_collision = pygame.Rect(x, y, width-(width * 0.3), height- (width * 0.3))     
         
         super().__init__(x, y, width, height, direction, image, tmp_collision, True)
+        
+        self.scaled_image = []
+        self.load_sprites("assets\player")
+        
         self.velocity = velocity
         self.turn_velocity = turn_velocity
 
 
     def update(self):
         
+        self.state = 1
         self.collision_box.center = (self.x, self.y)
         
         # Puts keys pressed in a keys list
@@ -58,17 +63,21 @@ class Player(Entity):
         
         if self.can_move:
             if keys[pygame.K_w]: #forward movement
+                self.state = 0
                 self.velocity += self.acceleration          
 
             if keys[pygame.K_s]: #backwards movement
+                self.state = 0
                 self.velocity -= self.acceleration
                 
             # Turns the player left or right depending on key pressed
             # (Might change it to acceleration based in future?)  
             if keys[pygame.K_a]:
+                self.state = 0
                 self.direction += self.turn_velocity
                 
             if keys[pygame.K_d]:
+                self.state = 0
                 self.direction -= self.turn_velocity
             
         elif self.collision_frame_counter < self.collision_max_frames:
@@ -94,8 +103,6 @@ class Player(Entity):
         if abs(self.velocity) > self.velocity_cap:
             self.velocity = self.velocity_cap * (self.velocity / abs(self.velocity))
         
-        
-
 
     def handle_collision(self, entity):
         
@@ -105,7 +112,7 @@ class Player(Entity):
         direction = math.degrees(math.atan2(dy, dx))
         
         self.pull(-direction, -5)
-        self.velocity = -self.velocity
+        self.velocity = -self.velocity/2
         
         self.can_move = False
     
