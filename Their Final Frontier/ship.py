@@ -14,14 +14,21 @@ class Ship(Entity):
     
     moving_flag = False
     
-    def __init__(self, x=0, y=0, width=50, height=50, velocity=1, direction=0, lagrange = 0):
+    def __init__(self, x=0, y=0, width=50, height=50, velocity=1, direction=0, lagrange = 0, has_collision = True):
+        
+        tmp_collision = 0
+        if has_collision:
+            tmp_collision = pygame.Rect(x, y, width-(width * 0.4), height- (width * 0.4))    
+            
         image = pygame.image.load("assets\ship\ship.png")       
-        super().__init__(x, y, width, height, direction, image)
+        super().__init__(x, y, width, height, direction, image, tmp_collision, True)
         self.velocity = velocity
         self.lagrange = lagrange
 
 
     def update(self):  #TODO: change this, testing code only 
+        
+        self.collision_box.center = (self.x, self.y)
         
         if self.follow_index >= len(self.waypoint_line):
             self.follow_index = len(self.waypoint_line) - 1
@@ -52,7 +59,7 @@ class Ship(Entity):
 
     # Pulls the player towards a specified angle
     def pull(self, direction, velocity):
-        dir_radians = -math.radians(direction+90)
+        dir_radians = -math.radians(direction)
         dir_cos = math.cos(dir_radians)
         dir_sin = math.sin(dir_radians)
 
@@ -107,3 +114,6 @@ class Ship(Entity):
         rotated_image = pygame.transform.rotate(self.scaled_image, self.direction)
         rotated_rect = rotated_image.get_rect(center=(self.x, self.y))
         screen.blit(rotated_image, rotated_rect)
+        
+        #DEBUG RENDERING
+        #pygame.draw.rect(screen,(0,255,0) ,self.collision_box)

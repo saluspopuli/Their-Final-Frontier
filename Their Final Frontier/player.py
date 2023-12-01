@@ -14,14 +14,36 @@ class Player(Entity):
     dir_sin = 0
     spacebar_pressed = False
     
-    def __init__(self, x=0, y=0, width=50, height=50, velocity = 0, direction=0, turn_velocity= 1):
-        image = pygame.image.load("assets\player\player.png")       
-        super().__init__(x, y, width, height, direction, image)
+    can_move = True
+    
+    collision_max_frames = 60*3
+    collision_frame_counter = 0
+    
+    def __init__(self, 
+                 x=0, 
+                 y=0, 
+                 width=50, 
+                 height=50, 
+                 velocity = 0, 
+                 direction=0, 
+                 turn_velocity= 1,
+                 has_collision = True):
+        
+        image = pygame.image.load("assets\player\player.png")
+        
+        tmp_collision = 0
+        if has_collision:
+            tmp_collision = pygame.Rect(x, y, width-(width * 0.3), height- (width * 0.3))     
+        
+        super().__init__(x, y, width, height, direction, image, tmp_collision, True)
         self.velocity = velocity
         self.turn_velocity = turn_velocity
 
 
     def update(self):
+        
+        self.collision_box.center = (self.x, self.y)
+        
         # Puts keys pressed in a keys list
         keys = pygame.key.get_pressed()
         
@@ -34,11 +56,26 @@ class Player(Entity):
             self.dir_sin = math.sin(dir_radians)
             self.tmp_rad = dir_radians
         
-        if keys[pygame.K_w]: #forward movement
-            self.velocity += self.acceleration          
+        if self.can_move:
+            if keys[pygame.K_w]: #forward movement
+                self.velocity += self.acceleration          
 
-        if keys[pygame.K_s]: #backwards movement
-            self.velocity -= self.acceleration
+            if keys[pygame.K_s]: #backwards movement
+                self.velocity -= self.acceleration
+                
+            # Turns the player left or right depending on key pressed
+            # (Might change it to acceleration based in future?)  
+            if keys[pygame.K_a]:
+                self.direction += self.turn_velocity
+                
+            if keys[pygame.K_d]:
+                self.direction -= self.turn_velocity
+            
+        elif self.collision_frame_counter < self.collision_max_frames:
+            self.collision_frame_counter += 1
+        else:
+            self.collision_frame_counter = 0
+            self.can_move = True
         
         # Calculates new location based on velocity and direction
         self.x += self.velocity * self.dir_cos
@@ -57,19 +94,26 @@ class Player(Entity):
         if abs(self.velocity) > self.velocity_cap:
             self.velocity = self.velocity_cap * (self.velocity / abs(self.velocity))
         
-        # Turns the player left or right depending on key pressed
-        # (Might change it to acceleration based in future?)  
-        if keys[pygame.K_a]:
-            self.direction += self.turn_velocity
-            
-        if keys[pygame.K_d]:
-            self.direction -= self.turn_velocity
+        
 
 
+    def handle_collision(self, entity):
+        
+        dx = entity.x - self.x
+        dy = entity.y - self.y
+
+        direction = math.degrees(math.atan2(dy, dx))
+        
+        self.pull(-direction, -5)
+        self.velocity = -self.velocity
+        
+        self.can_move = False
+    
+    
     # Pulls the player towards a specified angle
     def pull(self, direction, velocity):
         
-        dir_radians = -math.radians(direction+90)
+        dir_radians = -math.radians(direction)
         
         dir_cos = math.cos(dir_radians)
         dir_sin = math.sin(dir_radians)
