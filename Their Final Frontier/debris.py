@@ -1,6 +1,7 @@
 import pygame
 import math
 from entity import Entity
+from player import Player
 
 class Debris(Entity):
     
@@ -33,7 +34,7 @@ class Debris(Entity):
         
         if self.is_collided:
             self.pull(-self.collide_direction+180, self.collide_velocity)
-            self.collide_velocity -= 0.01
+            self.collide_velocity -= 0.006
             
             if self.collide_velocity < 0.001:
                 self.collide_velocity = 0
@@ -54,10 +55,10 @@ class Debris(Entity):
 
         self.collide_direction = math.degrees(math.atan2(dy, dx))
         
-        if entity.velocity < 0.001:
-            self.collide_velocity = 0.5
+        if abs(entity.velocity) < 0.001:
+            self.collide_velocity = 0.8
         else:
-            self.collide_velocity = abs(entity.velocity)
+            self.collide_velocity = abs(entity.velocity)*entity.weight
+            
         
         self.is_collided = True
-        

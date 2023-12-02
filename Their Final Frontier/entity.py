@@ -18,6 +18,7 @@ class Entity:
         self.state = 0
         self.collision_box = collision_box
         self.has_collision = has_collision
+        self.weight = 1
 
     def update(self):
         
@@ -45,7 +46,3 @@ class Entity:
         rotated_image = pygame.transform.rotate(self.scaled_image[self.state], self.direction)
         rotated_rect = rotated_image.get_rect(center=(self.x, self.y))
         screen.blit(rotated_image, rotated_rect)
-        
-        #DEBUG RENDERING
-        #if self.has_collision:
-            #pygame.draw.rect(screen,(0,255,0) ,self.collision_box)

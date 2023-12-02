@@ -9,7 +9,7 @@ class Ship(Entity):
     waypoint_line = [(0,0)]
     tmp_waypoint_line = []
     waypoint_step = 5
-    lagrange_points = 5
+    lagrange_points = 3
     waypoint_line_render_index = 1
     follow_index = 0
     
@@ -104,8 +104,9 @@ class Ship(Entity):
                 x = self.tmp_waypoint_line[i]
                 x_prev = self.tmp_waypoint_line[i-1]
                 
+                
                 #pygame.draw.circle(screen, (255,255,255), (x[0], x[1]), 2)
-                pygame.draw.line(screen, (255,255,255), (x_prev[0], x_prev[1]), (x[0], x[1]), 3)
+                pygame.draw.line(screen, (4, 138, 11), (x_prev[0], x_prev[1]), (x[0], x[1]), 3)
         
         # TODO: probably just delete this
         # Goes across the entire waypoint list and changes one line into green for a single
@@ -113,6 +114,9 @@ class Ship(Entity):
         if self.waypoint_line_render_index < len(self.waypoint_line):
             x = self.waypoint_line[self.waypoint_line_render_index]
             x_prev = self.waypoint_line[self.waypoint_line_render_index-1]
+            
+            pygame.draw.circle(screen, (0,255,0), x,4)
+            pygame.draw.circle(screen, (0,255,0), x_prev,2)
             
             pygame.draw.line(screen, (0,255,0), (x_prev[0],x_prev[1]), (x[0], x[1]), 8)
             self.waypoint_line_render_index += 1

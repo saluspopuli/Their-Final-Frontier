@@ -10,8 +10,8 @@ clock = pygame.time.Clock()
 FPS = 60
 
 # Creates the display
-screenX = 1500
-screenY = 600
+screenX = 1280
+screenY = 720
 screen = pygame.display.set_mode((screenX,screenY))
 
 # Title and Icon

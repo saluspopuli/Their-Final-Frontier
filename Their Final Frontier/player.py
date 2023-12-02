@@ -32,8 +32,9 @@ class Player(Entity):
         image = pygame.image.load("assets\player\player.png")
         
         tmp_collision = 0
+        collision_box_scale = 0.6
         if has_collision:
-            tmp_collision = pygame.Rect(x, y, width-(width * 0.3), height- (width * 0.3))     
+            tmp_collision = pygame.Rect(x, y, width*collision_box_scale, height*collision_box_scale)     
         
         super().__init__(x, y, width, height, direction, image, tmp_collision, True)
         
@@ -42,7 +43,8 @@ class Player(Entity):
         
         self.velocity = velocity
         self.turn_velocity = turn_velocity
-
+        
+        self.weight = 1.5
 
     def update(self):
         
@@ -73,11 +75,9 @@ class Player(Entity):
             # Turns the player left or right depending on key pressed
             # (Might change it to acceleration based in future?)  
             if keys[pygame.K_a]:
-                self.state = 0
                 self.direction += self.turn_velocity
                 
             if keys[pygame.K_d]:
-                self.state = 0
                 self.direction -= self.turn_velocity
             
         elif self.collision_frame_counter < self.collision_max_frames:

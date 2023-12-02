@@ -12,7 +12,7 @@ class Game():
     init_player_pos = (40,0)
     init_player_dir = 270
     
-    init_ship_pos = (-100, 400)
+    init_ship_pos = (-200, 400)
     init_ship_dir = 270
     
     debris_list = []
@@ -38,7 +38,7 @@ class Game():
         self.FPS = FPS
         self.font = pygame.font.Font(None, 36)
         
-        self.init_debris(10, "aasda") #TODO: move this 
+        self.init_debris(50, "aasdas") #TODO: move this 
 
     # FUNCTIONS ===========================================================================
     def update(self):
@@ -105,6 +105,14 @@ class Game():
                         self.ship.lagrange.add_point(self.player.x,self.player.y)
                         self.ship.draw_waypoint_line(self.screenX)
                 
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_F11:
+                    if self.screen.get_flags() & pygame.FULLSCREEN:
+                        # Switch to windowed mode
+                        self.screen = pygame.display.set_mode((self.screenX, self.screenY))
+                    else:
+                        # Switch to borderless fullscreen mode
+                        self.screen = pygame.display.set_mode((self.screenX, self.screenY), pygame.FULLSCREEN)
+                    
                 # EVENTS FOR DEBUGGING ===============================================================  
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_p: #TODO: placeholder
                     self.ship.moving_flag = True
