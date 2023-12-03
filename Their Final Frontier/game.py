@@ -38,7 +38,7 @@ class Game():
         self.FPS = FPS
         self.font = pygame.font.Font(None, 36)
         
-        self.init_debris(50, "aasdas") #TODO: move this 
+        self.init_debris(10, "aasdas") #TODO: move this 
 
     # FUNCTIONS ===========================================================================
     def update(self):
@@ -74,7 +74,7 @@ class Game():
                 0,
                 Debris(
                     random.randrange(150, self.screenX),
-                    random.randrange(150, self.screenY),
+                    random.randrange(0, self.screenY),
                     scale,
                     scale,
                     random.randrange(0, 360),
@@ -100,7 +100,7 @@ class Game():
                     self.running['value'] = False
                     
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                    if (self.player.x, self.player.y) not in self.ship.lagrange.coordinates:
+                    if not any(coord[0] == self.player.x for coord in self.ship.lagrange.coordinates):
                         self.entities.append(Waypoint(self.player.x,self.player.y))
                         self.ship.lagrange.add_point(self.player.x,self.player.y)
                         self.ship.draw_waypoint_line(self.screenX)

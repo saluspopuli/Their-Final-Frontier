@@ -56,7 +56,7 @@ class Debris(Entity):
         self.collide_direction = math.degrees(math.atan2(dy, dx))
         
         if abs(entity.velocity) < 0.001:
-            self.collide_velocity = 0.8
+            self.collide_velocity = 0.2
         else:
             self.collide_velocity = abs(entity.velocity)*entity.weight
             
