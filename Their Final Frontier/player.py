@@ -3,6 +3,7 @@ import math
 
 # Import the entity class
 from entity import Entity
+from arduino import Arduino
 
 class Player(Entity):
     
@@ -46,6 +47,9 @@ class Player(Entity):
         
         self.weight = 1.5
 
+    def pass_arduino(self, arduino):
+        self.arduino = arduino
+        
     def update(self):
         
         self.state = 1
@@ -64,24 +68,25 @@ class Player(Entity):
             self.tmp_rad = dir_radians
         
         if self.can_move:
-            if keys[pygame.K_w]: #forward movement
-                self.state = 0
-                self.velocity += self.acceleration          
-
-            if keys[pygame.K_s]: #backwards movement
-                self.state = 0
-                self.velocity -= self.acceleration
+            try:
+                self.arduino.send_data("1")
+                string = self.arduino.get_latest_data()
+                string = string.split()
                 
-            # Turns the player left or right depending on key pressed
-            # (Might change it to acceleration based in future?)  
-            if keys[pygame.K_a]:
-                self.direction += self.turn_velocity
+                tmp_list = []
+                for char in string:
+                    tmp_list.append(int(char))
+                    
+                self.direction += -tmp_list[0]/100
                 
-            if keys[pygame.K_d]:
-                self.direction -= self.turn_velocity
-            
+                if tmp_list[1] == 1:
+                    self.velocity += self.acceleration
+                    self.state = 0
+            except:
+                pass                
         elif self.collision_frame_counter < self.collision_max_frames:
             self.collision_frame_counter += 1
+            self.arduino.send_data("0")
         else:
             self.collision_frame_counter = 0
             self.can_move = True

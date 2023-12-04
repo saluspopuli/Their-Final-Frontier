@@ -5,6 +5,7 @@ from ship import Ship
 from lagrange import Lagrange
 from waypoint import Waypoint
 from debris import Debris
+from arduino import Arduino
 import os
 
 class Game():
@@ -16,6 +17,8 @@ class Game():
     init_ship_dir = 270
     
     debris_list = []
+    
+    waypoint_state = True
     
     def __init__(self, screen, screenX, screenY, clock, running, FPS=60):
         self.screenX = screenX
@@ -38,6 +41,8 @@ class Game():
         self.FPS = FPS
         self.font = pygame.font.Font(None, 36)
         
+        self.arduino = Arduino()
+        self.player.pass_arduino(self.arduino)
         self.init_debris(50, "aasdas") #TODO: move this 
 
     # FUNCTIONS ===========================================================================
@@ -84,12 +89,18 @@ class Game():
                     random.choice([True,False]) 
                 )
             )
-            
+    
+    def place_waypoint(self):
+        if (self.player.x, self.player.y) not in self.ship.lagrange.coordinates:
+            self.entities.append(Waypoint(self.player.x,self.player.y))
+            self.ship.lagrange.add_point(self.player.x,self.player.y)
+            self.ship.draw_waypoint_line(self.screenX)
+        
     def mainloop(self):   
         
         while self.running['value']:     
             self.clock.tick(self.FPS)
-            print("Current FPS: ", self.clock.get_fps())
+            #print("Current FPS: ", self.clock.get_fps())
             self.screen.fill((0,0,0)) #just draws black
             
             # Ensures that all events in the game are run
@@ -98,12 +109,10 @@ class Game():
                 # Quits game if pygame detects the quit event type
                 if event.type == pygame.QUIT:
                     self.running['value'] = False
+                    self.arduino.stop()
                     
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                    if (self.player.x, self.player.y) not in self.ship.lagrange.coordinates:
-                        self.entities.append(Waypoint(self.player.x,self.player.y))
-                        self.ship.lagrange.add_point(self.player.x,self.player.y)
-                        self.ship.draw_waypoint_line(self.screenX)
+                    self.place_waypoint
                 
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_F11:
                     if self.screen.get_flags() & pygame.FULLSCREEN:
@@ -126,6 +135,22 @@ class Game():
             # TODO: get rid of these puhon
             text = self.font.render("Lagrange points: " + str(self.ship.lagrange_points), True, (255, 255, 255))
             
+            try:
+                string = self.arduino.get_latest_data()
+                string = string.split()
+                    
+                tmp_list = []
+                for char in string:
+                    tmp_list.append(int(char))
+                
+                if tmp_list[2] == 1 and self.waypoint_state:
+                    self.place_waypoint()
+                    self.waypoint_state = False
+                elif tmp_list[2] == 0:
+                    self.waypoint_state = True
+            except:
+                pass
+                
             self.screen.blit(text, (20,20))       
             self.update()
             self.render(self.screen)

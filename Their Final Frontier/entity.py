@@ -3,9 +3,7 @@ import os
 import pygame
 
 class Entity:
-    
-    
-    
+
     def __init__(self, x, y, width, height, direction, image, collision_box = 0, has_collision = False):
         self.x = x
         self.y = y

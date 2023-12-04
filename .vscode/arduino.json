@@ -1,0 +1,6 @@
+{
+    "sketch": "Arduino_Control\\Arduino_Control.ino",
+    "output": "Arduino_Control\\build",
+    "board": "arduino:avr:uno",
+    "port": "COM6"
+}
