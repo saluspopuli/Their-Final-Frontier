@@ -35,9 +35,9 @@ class Game():
         
         self.ship.init_tmp_waypoint_line(screenX)
         waypoints = 3  
-        waypoints = int(waypoints + difficulty/5)  
+        waypoints = int(waypoints + difficulty/3)  
         bullets = 6
-        bullets = int (bullets + bullets/3)
+        bullets = int(bullets + difficulty/2)
         self.player = Player(self.init_player_pos[0], screenY/2, direction=self.init_player_dir,waypoints= waypoints, bullets = bullets)
         
         self.entities = [self.player,self.ship]

@@ -33,7 +33,7 @@ class Player(Entity):
                  height=50, 
                  velocity = 0, 
                  direction=0, 
-                 turn_velocity= 1,
+                 turn_velocity= 1.3,
                  has_collision = True,
                  waypoints = 4,
                  bullets = 6):
