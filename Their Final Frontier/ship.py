@@ -1,19 +1,27 @@
 import pygame
 import math
+import random
 
 from entity import Entity
 from lagrange import Lagrange
 
 class Ship(Entity):
     
-    waypoint_line = [(0,0)]
-    tmp_waypoint_line = []
     waypoint_step = 5
     lagrange_points = 3
     waypoint_line_render_index = 1
     follow_index = 0
     
+    can_move = True
     moving_flag = False
+    
+    collision_max_shake_frame = 15
+    collision_shake_frame = collision_max_shake_frame
+    
+    collision_max_cooldown = 60*3
+    collision_cooldown_frame = 0
+    
+    lives = 4
     
     def __init__(self, x=0, y=0, width=50, height=50, velocity=1, direction=0, lagrange = 0, has_collision = True):
         
@@ -25,21 +33,35 @@ class Ship(Entity):
         super().__init__(x, y, width, height, direction, image, tmp_collision, True)
         self.velocity = velocity
         self.lagrange = lagrange
+        
+        self.waypoint_line = [(0,0)]
+        self.tmp_waypoint_line = []
 
 
     def update(self):  #TODO: change this, testing code only 
         
         self.collision_box.center = (self.x, self.y)
         
-        if self.follow_index >= len(self.waypoint_line):
-            self.follow_index = len(self.waypoint_line) - 1
+        if self.can_move and len(self.waypoint_line) < 5:
+            if self.moving_flag:
+                info = pygame.display.Info()
+                self.move_ship(info.current_w, info.current_h/2)
+        elif self.can_move:
+            if self.follow_index >= len(self.waypoint_line):
+                self.follow_index = len(self.waypoint_line) - 1
+                
+            if self.moving_flag:
+                tmpcoord = self.waypoint_line[self.follow_index]
+                self.move_ship(tmpcoord[0],tmpcoord[1])
+                
+                if (self.x - tmpcoord[0]) > -0.1:
+                    self.follow_index += 1
+        else:
+            self.collision_cooldown_frame += 1
             
-        if self.moving_flag:
-            tmpcoord = self.waypoint_line[self.follow_index]
-            self.move_ship(tmpcoord[0],tmpcoord[1])
-            
-            if (self.x - tmpcoord[0]) > -0.1:
-                self.follow_index += 1
+            if self.collision_cooldown_frame >= self.collision_max_cooldown:
+                self.collision_cooldown_frame = 0
+                self.can_move = True
         
     def move_ship(self, target_x, target_y):
         
@@ -66,6 +88,14 @@ class Ship(Entity):
 
         self.x += velocity * dir_cos
         self.y += velocity * dir_sin 
+    
+    def handle_collision(self, entity):
+        
+        self.can_move = False
+        self.collision_shake_frame = 0
+        
+        if self.collision_cooldown_frame == 0:
+            self.lives -= 1     
     
     # Mostly a debug function that dynamically changes the amount of lagrange points
     # that are considered
@@ -124,9 +154,15 @@ class Ship(Entity):
         else:
             self.waypoint_line_render_index = 1
         
-        # Renders the ship image normally       
-        rotated_image = pygame.transform.rotate(self.scaled_image[self.state], self.direction)
-        rotated_rect = rotated_image.get_rect(center=(self.x, self.y))
+        # Renders the ship image normally
+        if self.collision_shake_frame <= self.collision_max_shake_frame:
+            self.collision_shake_frame += 1
+            rotated_image = pygame.transform.rotate(self.scaled_image[self.state], self.direction)
+            rotated_rect = rotated_image.get_rect(center=(self.x + random.randrange(-2,2), self.y + random.randrange(-2,2)))
+        else:       
+            rotated_image = pygame.transform.rotate(self.scaled_image[self.state], self.direction)
+            rotated_rect = rotated_image.get_rect(center=(self.x, self.y))
+        
         screen.blit(rotated_image, rotated_rect)
         
         #DEBUG RENDERING

@@ -26,13 +26,21 @@ running = {'value': True}
 gui_manager = pygame_gui.UIManager((screenX,screenY))
 
 main_menu = Menu(gui_manager, (screenX, screenY), screen, running, clock)
-main_game = Game(screen, screenX, screenY, clock, running, FPS)
+
 
 # MAIN ================================================================================
 if __name__ == "__main__":
        
     #main_menu.mainloop()
-    main_game.mainloop()
+    difficulty = 2
+
+    while running:
+        game = Game(screen, screenX, screenY, clock, running, FPS, difficulty)
+        if game.mainloop() and game.game_flag:
+            difficulty += 1
+        else:
+            break
+            
     
     
 

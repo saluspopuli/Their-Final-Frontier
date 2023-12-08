@@ -3,3 +3,4 @@ Todo:
     of sprites instead of just one sprite
     - Do the main menu
     - Make it so that game.py can be restarted and settings can be changed
+    

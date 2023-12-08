@@ -11,6 +11,8 @@ class Debris(Entity):
     
     def __init__(self, x, y, width, height, direction, image, has_collision, turn_speed, turn_direction):
         
+        self.lives = 3
+        
         self.velocity = 0
         self.turn_speed = turn_speed/100
         

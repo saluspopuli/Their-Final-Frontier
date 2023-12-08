@@ -1,5 +1,6 @@
 import pygame
 import math
+import random
 
 # Import the entity class
 from entity import Entity
@@ -19,6 +20,12 @@ class Player(Entity):
     collision_max_frames = 60*3
     collision_frame_counter = 0
     
+    collision_max_shake_frame = 15
+    collision_shake_frame = collision_max_shake_frame
+    
+    collision_max_cooldown_frame = 60*3
+    collision_cooldown_frame = 30
+    
     def __init__(self, 
                  x=0, 
                  y=0, 
@@ -27,7 +34,9 @@ class Player(Entity):
                  velocity = 0, 
                  direction=0, 
                  turn_velocity= 1,
-                 has_collision = True):
+                 has_collision = True,
+                 waypoints = 4,
+                 bullets = 6):
         
         image = pygame.image.load("assets\player\player.png")
         
@@ -41,10 +50,15 @@ class Player(Entity):
         self.scaled_image = []
         self.load_sprites("assets\player")
         
+        self.lives = 4
+        
         self.velocity = velocity
         self.turn_velocity = turn_velocity
         
         self.weight = 1.5
+        
+        self.bullets = bullets
+        self.waypoints = waypoints
 
     def update(self):
         
@@ -102,19 +116,33 @@ class Player(Entity):
         # Ensures that velocity does not go beyond the player's velocity cap
         if abs(self.velocity) > self.velocity_cap:
             self.velocity = self.velocity_cap * (self.velocity / abs(self.velocity))
+            
+        if self.collision_cooldown_frame > 0:
+            self.collision_cooldown_frame -= 1
         
 
     def handle_collision(self, entity):
+        from bullet import Bullet
         
-        dx = entity.x - self.x
-        dy = entity.y - self.y
+        if not isinstance(entity, Bullet):
+            dx = entity.x - self.x
+            dy = entity.y - self.y
 
-        direction = math.degrees(math.atan2(dy, dx))
+            direction = math.degrees(math.atan2(dy, dx))
+            
+            self.pull(-direction, -5)
+            self.velocity = -self.velocity/2
+            
+            self.can_move = False
+            
+            self.collision_shake_frame = 0
+        else:
+            self.collision_shake_frame = self.collision_max_shake_frame/4
         
-        self.pull(-direction, -5)
-        self.velocity = -self.velocity/2
-        
-        self.can_move = False
+        if self.collision_cooldown_frame == 0:
+            if not isinstance(entity, Bullet):
+                self.lives -= 1     
+                self.collision_cooldown_frame = self.collision_max_cooldown_frame
     
     
     # Pulls the player towards a specified angle
@@ -127,9 +155,15 @@ class Player(Entity):
 
         self.x += velocity * dir_cos
         self.y += velocity * dir_sin 
-            
-            
+    
+    def render(self, screen):
         
-
+        if self.collision_shake_frame <= self.collision_max_shake_frame:
+            self.collision_shake_frame += 1
+            rotated_image = pygame.transform.rotate(self.scaled_image[self.state], self.direction)
+            rotated_rect = rotated_image.get_rect(center=(self.x + random.randrange(-2,2), self.y + random.randrange(-2,2)))
+        else:
+            rotated_image = pygame.transform.rotate(self.scaled_image[self.state], self.direction)
+            rotated_rect = rotated_image.get_rect(center=(self.x, self.y))
         
-        
+        screen.blit(rotated_image, rotated_rect)

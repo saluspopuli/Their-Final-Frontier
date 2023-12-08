@@ -11,8 +11,9 @@ class Entity:
         self.height = height
         self.direction = direction
         self.image = image
-        self.scaled_image = []
-        self.scaled_image.append(pygame.transform.scale(self.image, (self.width, self.height)))
+        if image != 0:
+            self.scaled_image = []
+            self.scaled_image.append(pygame.transform.scale(self.image, (self.width, self.height)))
         self.state = 0
         self.collision_box = collision_box
         self.has_collision = has_collision
