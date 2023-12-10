@@ -18,10 +18,8 @@ class Ship(Entity):
     collision_max_shake_frame = 15
     collision_shake_frame = collision_max_shake_frame
     
-    collision_max_cooldown = 60*3
+    collision_max_cooldown = 60*4
     collision_cooldown_frame = 0
-    
-    lives = 4
     
     def __init__(self, x=0, y=0, width=50, height=50, velocity=1, direction=0, lagrange = 0, has_collision = True):
         
@@ -29,24 +27,40 @@ class Ship(Entity):
         if has_collision:
             tmp_collision = pygame.Rect(x, y, width-(width * 0.4), height- (width * 0.4))    
             
-        image = pygame.image.load("assets\ship\ship.png")       
+        image = pygame.image.load("assets\ship\ship1.png")       
         super().__init__(x, y, width, height, direction, image, tmp_collision, True)
         self.velocity = velocity
         self.lagrange = lagrange
         
+        self.load_sprites("assets\ship")
+        
         self.waypoint_line = [(0,0)]
         self.tmp_waypoint_line = []
+        
+        self.lives = 4
+        
+        self.state = 0
+        self.state_save = 0
 
 
-    def update(self):  #TODO: change this, testing code only 
+    def update(self):
+        
+        self.state = self.state_save + 1 #State thing
         
         self.collision_box.center = (self.x, self.y)
         
+        if self.can_move:
+            self.state = self.state_save + 2
+            pass
+            
         if self.can_move and len(self.waypoint_line) < 5:
+            
             if self.moving_flag:
                 info = pygame.display.Info()
                 self.move_ship(info.current_w, info.current_h/2)
+                
         elif self.can_move:
+            
             if self.follow_index >= len(self.waypoint_line):
                 self.follow_index = len(self.waypoint_line) - 1
                 
@@ -90,12 +104,12 @@ class Ship(Entity):
         self.y += velocity * dir_sin 
     
     def handle_collision(self, entity):
-        
         self.can_move = False
-        self.collision_shake_frame = 0
-        
+        self.collision_shake_frame = 0 
+    
         if self.collision_cooldown_frame == 0:
-            self.lives -= 1     
+            self.state_save += 2 #State function
+            self.lives -= 1
     
     # Mostly a debug function that dynamically changes the amount of lagrange points
     # that are considered

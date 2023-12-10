@@ -942,6 +942,10 @@
   ('packaging.version',
    'C:\\Users\\Andre\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\packaging\\version.py',
    'PYMODULE'),
+  ('particles',
+   'C:\\Users\\Andre\\Documents\\Coding Main\\Numerical Methods Project\\Their '
+   'Final Frontier\\particles.py',
+   'PYMODULE'),
   ('pathlib',
    'C:\\Users\\Andre\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\pathlib.py',
    'PYMODULE'),

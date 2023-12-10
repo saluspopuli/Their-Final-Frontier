@@ -2,5 +2,8 @@ Todo:
     - Redo the entity class and all other entities so that it can load in a list
     of sprites instead of just one sprite
     - Do the main menu
-    - Make it so that game.py can be restarted and settings can be changed
+    
+    - Create UI elements for waypoints and bullets
+    - Add pixel Backgrounds
+    - Add debris pieces that explode out when debris is destroyed
     

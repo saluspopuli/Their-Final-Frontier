@@ -18,13 +18,16 @@ class Entity:
         self.collision_box = collision_box
         self.has_collision = has_collision
         self.weight = 1
+        self.lives = 1
 
     def update(self):
         
         pass
     
-    def load_sprites(self, folder):  
-        for filename in os.listdir(folder):
+    def load_sprites(self, folder):
+        self.scaled_image = []
+        file_list = sorted(os.listdir(folder))
+        for filename in file_list:
             if filename.endswith(".png"):
                 image = pygame.image.load(os.path.join(folder, filename))
                 self.scaled_image.append(pygame.transform.scale(image, (self.width, self.height)))

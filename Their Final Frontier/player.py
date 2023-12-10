@@ -38,7 +38,7 @@ class Player(Entity):
                  waypoints = 4,
                  bullets = 6):
         
-        image = pygame.image.load("assets\player\player.png")
+        image = pygame.image.load("assets\player\player1.png")
         
         tmp_collision = 0
         collision_box_scale = 0.6
@@ -50,7 +50,7 @@ class Player(Entity):
         self.scaled_image = []
         self.load_sprites("assets\player")
         
-        self.lives = 4
+        self.lives = 3
         
         self.velocity = velocity
         self.turn_velocity = turn_velocity
@@ -59,10 +59,13 @@ class Player(Entity):
         
         self.bullets = bullets
         self.waypoints = waypoints
+        
+        self.state_save = self.state
 
     def update(self):
         
-        self.state = 1
+        self.state = self.state_save
+        
         self.collision_box.center = (self.x, self.y)
         
         # Puts keys pressed in a keys list
@@ -79,11 +82,11 @@ class Player(Entity):
         
         if self.can_move:
             if keys[pygame.K_w]: #forward movement
-                self.state = 0
+                self.state = self.state + 1
                 self.velocity += self.acceleration          
 
             if keys[pygame.K_s]: #backwards movement
-                self.state = 0
+                self.state = self.state + 1
                 self.velocity -= self.acceleration
                 
             # Turns the player left or right depending on key pressed
@@ -136,6 +139,9 @@ class Player(Entity):
             self.can_move = False
             
             self.collision_shake_frame = 0
+            
+            self.state += 2
+            self.state_save += 2
         else:
             self.collision_shake_frame = self.collision_max_shake_frame/4
         

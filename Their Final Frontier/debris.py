@@ -1,7 +1,6 @@
 import pygame
 import math
 from entity import Entity
-from player import Player
 
 class Debris(Entity):
     
@@ -9,12 +8,11 @@ class Debris(Entity):
     collide_velocity = 0
     is_collided = False
     
-    def __init__(self, x, y, width, height, direction, image, has_collision, turn_speed, turn_direction):
-        
-        self.lives = 3
+    def __init__(self, x, y, width, height, direction, image, has_collision, turn_speed, turn_direction):    
         
         self.velocity = 0
         self.turn_speed = turn_speed/100
+        self.sprite_direction = 0
         
         if turn_direction:
             self.turn_speed = -self.turn_speed
@@ -27,11 +25,14 @@ class Debris(Entity):
         
         super().__init__(x, y, width, height, direction, image, tmp_collision, has_collision)
         
-    def update(self):
+        self.lives = int(1 + ((height-50)/10))
         
+    def update(self):
+            
         self.velocity = self.collide_velocity
-        self.direction += self.turn_speed
-          
+        self.direction = self.collide_direction
+        self.sprite_direction += self.turn_speed
+        
         self.collision_box.center = (self.x, self.y)
         
         if self.is_collided:
@@ -57,6 +58,8 @@ class Debris(Entity):
 
         self.collide_direction = math.degrees(math.atan2(dy, dx))
         
+        self.lives -= 1
+        
         if abs(entity.velocity) < 0.001:
             self.collide_velocity = 0.2
         else:
@@ -64,3 +67,9 @@ class Debris(Entity):
             
         
         self.is_collided = True
+        
+    def render(self, screen):
+        
+        rotated_image = pygame.transform.rotate(self.scaled_image[self.state], self.sprite_direction)
+        rotated_rect = rotated_image.get_rect(center=(self.x, self.y))
+        screen.blit(rotated_image, rotated_rect)

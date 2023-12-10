@@ -16,18 +16,18 @@ class Bullet(Entity):
         
         self.weight = 0.1
         self.velocity = 8
+        
+        dir_radians = -math.radians(self.direction+90)
+        
+        self.dir_cos = math.cos(dir_radians)
+        self.dir_sin = math.sin(dir_radians)
     
     def update(self):
         
         self.collision_box.center = (self.x, self.y)
-        
-        dir_radians = -math.radians(self.direction+90)
-        
-        dir_cos = math.cos(dir_radians)
-        dir_sin = math.sin(dir_radians)
 
-        self.x += self.velocity * dir_cos
-        self.y += self.velocity * dir_sin
+        self.x += self.velocity * self.dir_cos
+        self.y += self.velocity * self.dir_sin
         
         pass
     
@@ -37,13 +37,10 @@ class Bullet(Entity):
                 if self.collision_box.colliderect(entity.collision_box):
                     entities.remove(self)
                     entity.handle_collision(self)
-                    entity.lives -= 1
-                    if entity.lives <= 0:
-                        entities.remove(entity)
                     
     
     
     def render(self, screen):
-        pygame.draw.circle(screen, (255,255,255), (self.x,self.y), self.width/2)
+        pygame.draw.circle(screen, (255,0,0), (self.x,self.y), self.width/2)
 
     

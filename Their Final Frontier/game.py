@@ -6,6 +6,7 @@ from lagrange import Lagrange
 from waypoint import Waypoint
 from debris import Debris
 from bullet import Bullet
+from particles import Particles
 import os
 
 class Game():
@@ -22,6 +23,8 @@ class Game():
     ship_initial_movement = 0
     
     def __init__(self, screen, screenX, screenY, clock, running, FPS=60, difficulty = 1):
+        self.entities = []
+        
         self.screenX = screenX
         self.screenY = screenY
         self.running = running
@@ -40,7 +43,9 @@ class Game():
         bullets = int(bullets + difficulty/2)
         self.player = Player(self.init_player_pos[0], screenY/2, direction=self.init_player_dir,waypoints= waypoints, bullets = bullets)
         
-        self.entities = [self.player,self.ship]
+        self.entities.append(self.player)
+        self.entities.append(self.ship)
+        
         self.screen = screen
         self.clock = clock
         self.FPS = FPS
@@ -53,22 +58,37 @@ class Game():
 
     # FUNCTIONS ===========================================================================
     def update(self):
+        
         for entity in reversed(self.entities):
             if entity.has_collision:
                 entity.check_collision(self.entities)
         
         for entity in self.entities:
-            if isinstance(entity, Bullet):
-                if entity.x > self.screenX or entity.x < 0 or entity.y > self.screenY or entity.y < 0:
-                    self.entities.remove(entity)
+            if isinstance(entity, Bullet) and (entity.x > self.screenX or entity.x < 0 or entity.y > self.screenY or entity.y < 0):
+                self.entities.remove(entity)
+            else:
+                if entity.lives <= 0:        
+                    if not isinstance(entity, Particles):
+                        entity.update()
+                        self.createParticles(entity)
+                    
+                    if not isinstance(entity, Ship) or not isinstance(entity, Player):
+                        self.entities.remove(entity)
                 else:
                     entity.update()
-            else:
-                entity.update()
-    
+                    
     def render(self, screen):
         for entity in reversed(self.entities):
             entity.render(screen)
+            
+    def createParticles(self, entity):
+        for i in range(0,random.randint(10,30)):
+            scale = random.uniform(5,10)
+            direction = entity.direction + random.uniform(-30,30)
+            velocity = entity.velocity + random.uniform(1,3)
+            tmp_color = random.randint(69,255)
+            color = (tmp_color, int(tmp_color/1.4), int(tmp_color/3.6))
+            self.entities.append(Particles(entity.x,entity.y,scale,scale,direction, velocity,color))
     
     def game_over(self):
         text = self.font.render("GAME OVER", True, (255, 255, 255))
@@ -114,6 +134,9 @@ class Game():
             )
             
     def mainloop(self):   
+        
+        #test_var = 0 #TODO: ONLY USE FOR TESTING
+        #self.player.bullets = 10000
         
         while self.running['value'] and self.game_flag:     
             self.clock.tick(self.FPS)
