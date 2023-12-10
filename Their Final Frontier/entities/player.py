@@ -61,8 +61,12 @@ class Player(Entity):
         self.waypoints = waypoints
         
         self.state_save = self.state
+        
+        self.start_frame = 0
+        self.max_start_frame = 60
 
     def update(self):
+        
         
         self.state = self.state_save
         
@@ -80,7 +84,12 @@ class Player(Entity):
             self.dir_sin = math.sin(dir_radians)
             self.tmp_rad = dir_radians
         
-        if self.can_move:
+        if self.start_frame < self.max_start_frame:
+            self.start_frame += 1
+            self.velocity += self.acceleration
+            self.state = self.state_save + 1
+            
+        elif self.can_move:
             if keys[pygame.K_w]: #forward movement
                 self.state = self.state + 1
                 self.velocity += self.acceleration          

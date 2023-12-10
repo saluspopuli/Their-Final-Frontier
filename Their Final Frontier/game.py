@@ -12,7 +12,7 @@ import os
 
 class Game():
     
-    init_player_pos = (40,0)
+    init_player_pos = (-50,0)
     init_player_dir = 270
     
     init_ship_pos = (-200, 400)
@@ -98,6 +98,8 @@ class Game():
         
         for entity in reversed(self.entities):
             entity.render(screen)
+            
+        self.misc_ui_elements()
 
             
     def createParticles(self, entity):
@@ -151,7 +153,27 @@ class Game():
                     random.choice([True,False]) 
                 )
             )
-            
+
+    def fadeout(self):
+        running = True
+        darkness_frame = 80
+        darkness = 0
+        
+        dark_surface = pygame.Surface(self.background.get_size(), pygame.SRCALPHA)  # Set the surface with alpha channel
+        
+        while running:
+            darkness_frame -= 1
+            darkness += 5
+            if darkness > 255:
+                darkness = 255
+            if darkness_frame <= 0:
+                running = False
+            self.clock.tick(self.FPS)
+            dark_surface.fill((0, 0, 0, darkness))  # Set the fill color with alpha value
+            self.render(self.screen)
+            self.screen.blit(dark_surface,(0,0))
+            pygame.display.update()
+        
     def mainloop(self):   
         
         #test_var = 0 #TODO: ONLY USE FOR TESTING
@@ -233,73 +255,66 @@ class Game():
               
             self.update()
             self.render(self.screen)
-            
-            # UI ELEMENT RENDERING ============================================
-            
-            # TODO: PUT THESE INTO CHECKING MODE
-            text = self.font.render("Lagrange points: " + str(self.ship.lagrange_points), True, (255, 255, 255))
-            self.screen.blit(text, (20,10)) 
-            
-            # t_waypoint_num = self.font.render("Waypoints Left: " + str(self.player.waypoints), True, (255, 255, 255))
-            # self.screen.blit(t_waypoint_num, (20,20))
-            # t_bullets_num = self.font.render("Bullets Left: " + str(self.player.bullets), True, (255, 255, 255))
-            # self.screen.blit(t_bullets_num, (20,50))
-            
-            if not self.ship.moving_flag:
-                ship_movement_time = int((self.ship_max_initial_movement - self.ship_initial_movement)/self.FPS)
-                t_ship_move_time = self.font.render("Ship moves in : " + str(ship_movement_time) + "s", True, (255, 255, 255))
-                self.screen.blit(t_ship_move_time, (20,self.screenY - 110))
-               
-            self.HUD = []
-            
-            #Bullet HUD
-            tmp_bull = self.player.bullets
-            if self.player.bullets > 13:
-                tmp_bull = 13
-                
-            for i in range(tmp_bull):       
-                self.HUD.append(Bullet_UI(10 + i*40, self.screenY-55,50))
-                
-            #Waypoint HUD
-            tmp_waypoint = self.player.waypoints
-            if self.player.waypoints > 7:
-                tmp_waypoint = 7
-                
-            for i in range(tmp_waypoint):
-                self.HUD.append(Waypoint_UI((self.screenX-60) - i*70, self.screenY-55, 50))
-            
-            self.screen.blit(self.surface, (0, self.screenY-60))  
-            
-            for element in self.HUD:
-                element.render(self.screen)  
-                
-            # Score displaying
-            
-            t_score = self.font.render(str(self.score), True, (255, 255, 255))
-            
-            text_width = t_score.get_width()
-            text_x = (self.screenX - text_width) // 2
-         
-            self.screen.blit(t_score, (text_x, self.screenY-40))
-            
-            t_score = self.font_small.render("Score:", True, (255, 255, 255))
-            
-            text_width = t_score.get_width()
-            text_x = (self.screenX - text_width) // 2
-         
-            self.screen.blit(t_score, (text_x, self.screenY-60))
-            
-            # ====================================================================
 
             pygame.display.update()
             
             if not self.game_flag:
                 self.game_over()
-
-
-    
-
-    
-    
-
-
+                
+    def misc_ui_elements(self):
+        # UI ELEMENT RENDERING ============================================
+                
+        # TODO: PUT THESE INTO CHECKING MODE
+        text = self.font.render("Lagrange points: " + str(self.ship.lagrange_points), True, (255, 255, 255))
+        self.screen.blit(text, (20,10)) 
+        
+        # t_waypoint_num = self.font.render("Waypoints Left: " + str(self.player.waypoints), True, (255, 255, 255))
+        # self.screen.blit(t_waypoint_num, (20,20))
+        # t_bullets_num = self.font.render("Bullets Left: " + str(self.player.bullets), True, (255, 255, 255))
+        # self.screen.blit(t_bullets_num, (20,50))
+        
+        if not self.ship.moving_flag:
+            ship_movement_time = int((self.ship_max_initial_movement - self.ship_initial_movement)/self.FPS)
+            t_ship_move_time = self.font.render("Ship moves in : " + str(ship_movement_time) + "s", True, (255, 255, 255))
+            self.screen.blit(t_ship_move_time, (20,self.screenY - 110))
+            
+        self.HUD = []
+        
+        #Bullet HUD
+        tmp_bull = self.player.bullets
+        if self.player.bullets > 13:
+            tmp_bull = 13
+            
+        for i in range(tmp_bull):       
+            self.HUD.append(Bullet_UI(10 + i*40, self.screenY-55,50))
+            
+        #Waypoint HUD
+        tmp_waypoint = self.player.waypoints
+        if self.player.waypoints > 7:
+            tmp_waypoint = 7
+            
+        for i in range(tmp_waypoint):
+            self.HUD.append(Waypoint_UI((self.screenX-60) - i*70, self.screenY-55, 50))
+        
+        self.screen.blit(self.surface, (0, self.screenY-60))  
+        
+        for element in self.HUD:
+            element.render(self.screen)  
+            
+        # Score displaying
+        
+        t_score = self.font.render(str(self.score), True, (255, 255, 255))
+        
+        text_width = t_score.get_width()
+        text_x = (self.screenX - text_width) // 2
+        
+        self.screen.blit(t_score, (text_x, self.screenY-40))
+        
+        t_score = self.font_small.render("Score:", True, (255, 255, 255))
+        
+        text_width = t_score.get_width()
+        text_x = (self.screenX - text_width) // 2
+        
+        self.screen.blit(t_score, (text_x, self.screenY-60))
+        
+        # ====================================================================

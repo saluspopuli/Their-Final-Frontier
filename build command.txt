@@ -1,1 +1,1 @@
-pyinstaller --onefile --noconsole --add-data "assets;assets" TFF.py
+pyinstaller --onefile --noconsole --icon=icon.ico --add-data "assets;assets" TFF.py

@@ -44,6 +44,8 @@ if __name__ == "__main__":
         except:
             break
         
+        game.fadeout()
+        
         score += tmp_score
         if game.game_flag:
             difficulty += 1
