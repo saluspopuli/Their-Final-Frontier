@@ -64,10 +64,12 @@ class Player(Entity):
         
         self.start_frame = 0
         self.max_start_frame = 60
+        
+        self.is_moving = False
 
     def update(self):
         
-        
+        self.is_moving = False
         self.state = self.state_save
         
         self.collision_box.center = (self.x, self.y)
@@ -88,15 +90,18 @@ class Player(Entity):
             self.start_frame += 1
             self.velocity += self.acceleration
             self.state = self.state_save + 1
+            self.is_moving = True
             
         elif self.can_move:
             if keys[pygame.K_w]: #forward movement
                 self.state = self.state + 1
-                self.velocity += self.acceleration          
+                self.velocity += self.acceleration  
+                self.is_moving = True        
 
             if keys[pygame.K_s]: #backwards movement
                 self.state = self.state + 1
                 self.velocity -= self.acceleration
+                self.is_moving = True
                 
             # Turns the player left or right depending on key pressed
             # (Might change it to acceleration based in future?)  

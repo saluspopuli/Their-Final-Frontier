@@ -19,6 +19,9 @@ class Entity:
         self.has_collision = has_collision
         self.weight = 1
         self.lives = 1
+        
+        pygame.mixer.init()
+        self.sound = pygame.mixer.Sound(r"assets\sound\hit.wav")
 
     def update(self):
         

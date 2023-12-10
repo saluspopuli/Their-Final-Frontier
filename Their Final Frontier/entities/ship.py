@@ -105,6 +105,7 @@ class Ship(Entity):
         self.y += velocity * dir_sin 
     
     def handle_collision(self, entity):
+        self.sound.play()
         self.can_move = False
         self.collision_shake_frame = 0 
     

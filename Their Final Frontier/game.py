@@ -32,6 +32,20 @@ class Game():
         self.screenY = screenY
         self.running = running
         
+        pygame.mixer.init()
+        self.sounds = []
+        self.sounds.append(pygame.mixer.Sound(r"assets\sound\explosion.wav"))   # 0
+        self.sounds.append(pygame.mixer.Sound(r"assets\sound\game_over.wav"))   # 1
+        self.sounds.append(pygame.mixer.Sound(r"assets\sound\hit.wav"))         # 2
+        self.sounds.append(pygame.mixer.Sound(r"assets\sound\laser.wav"))       # 3
+        self.sounds.append(pygame.mixer.Sound(r"assets\sound\place.wav"))       # 4
+        self.sounds.append(pygame.mixer.Sound(r"assets\sound\rumbling.wav"))    # 5
+        
+        self.sounds[3].set_volume(0.8)
+        self.sounds[4].set_volume(0.6)
+        self.rumble_channel = pygame.mixer.Channel(2)
+        self.rumble_volume = 0.35
+        
         self.ship = Ship(self.init_ship_pos[0],
                          screenY/2,
                          width=150,
@@ -90,6 +104,9 @@ class Game():
                     
                     if not isinstance(entity, Ship) or not isinstance(entity, Player):
                         self.entities.remove(entity)
+                        
+                        if not isinstance(entity, Particles):
+                            self.sounds[0].play()
                 else:
                     entity.update()
                     
@@ -112,6 +129,7 @@ class Game():
             self.entities.append(Particles(entity.x,entity.y,scale,scale,direction, velocity,color))
     
     def game_over(self):
+        self.sounds[1].play()
         text = self.font.render("GAME OVER", True, (255, 255, 255))
             
         self.screen.blit(text, ((((self.screenX - text.get_width())/2)), (self.screenY - text.get_height())/2))
@@ -158,10 +176,15 @@ class Game():
         running = True
         darkness_frame = 80
         darkness = 0
-        
+        volume = self.rumble_volume
         dark_surface = pygame.Surface(self.background.get_size(), pygame.SRCALPHA)  # Set the surface with alpha channel
         
         while running:
+            
+            volume -= 0.005
+            if volume >= 0:
+                volume = 0
+            self.rumble_channel.set_volume(volume)
             darkness_frame -= 1
             darkness += 5
             if darkness > 255:
@@ -178,6 +201,7 @@ class Game():
         
         #test_var = 0 #TODO: ONLY USE FOR TESTING
         #self.player.bullets = 10000
+        #self.player.waypoints = 10000
         
         while self.running['value'] and self.game_flag:     
             self.clock.tick(self.FPS)
@@ -200,10 +224,12 @@ class Game():
                         self.ship.lagrange.add_point(self.player.x,self.player.y)
                         self.ship.draw_waypoint_line(self.screenX)
                         self.player.waypoints-=1
+                        self.sounds[4].play()
                         
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and self.player.can_move and self.player.bullets > 0:
                     self.entities.append(Bullet(self.player.x, self.player.y, 8,8, self.player.direction))
                     self.player.bullets -= 1
+                    self.sounds[3].play()
                 
                 # Toggles fullscreen/windowed when F11 is pressed
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_F11:
@@ -251,6 +277,15 @@ class Game():
                 self.ship_initial_movement += 1
             elif not self.ship.moving_flag:
                 self.ship.moving_flag = True
+            
+            self.rumble_channel.set_volume(self.rumble_volume)
+            
+            if ((self.ship.can_move and self.ship.moving_flag) or self.player.is_moving) and not self.rumble_channel.get_busy():
+                self.rumble_channel.play(self.sounds[5])
+            
+            if not ( self.ship.can_move and self.ship.moving_flag) and not self.player.is_moving:
+                self.rumble_channel.stop()
+            
             # =================================================================
               
             self.update()
@@ -290,8 +325,8 @@ class Game():
             
         #Waypoint HUD
         tmp_waypoint = self.player.waypoints
-        if self.player.waypoints > 7:
-            tmp_waypoint = 7
+        if self.player.waypoints > 8:
+            tmp_waypoint = 8
             
         for i in range(tmp_waypoint):
             self.HUD.append(Waypoint_UI((self.screenX-60) - i*70, self.screenY-55, 50))

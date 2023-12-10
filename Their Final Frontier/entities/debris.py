@@ -52,7 +52,9 @@ class Debris(Entity):
         self.x += velocity * dir_cos
         self.y += velocity * dir_sin 
         
-    def handle_collision(self, entity):    
+    def handle_collision(self, entity):
+        self.sound.play()
+        
         dx = entity.x - self.x
         dy = entity.y - self.y
 

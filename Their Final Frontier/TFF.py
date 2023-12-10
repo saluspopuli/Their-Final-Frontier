@@ -36,9 +36,14 @@ if __name__ == "__main__":
     score = 0
     tmp_score = 0
     
+    pygame.mixer.init()
+    sound = pygame.mixer.Sound(r"assets\sound\bg_loop\bg_loop.wav")
+    loop_channel = pygame.mixer.Channel(3)
     while running:
         game = Game(screen, screenX, screenY, clock, running, FPS, difficulty, score)
-
+        loop_channel.set_volume(1.5)
+        loop_channel.play(sound,-1)
+        
         try:
             game_state, tmp_score = game.mainloop()
         except:

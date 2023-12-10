@@ -15,7 +15,7 @@ class Bullet(Entity):
         super().__init__(x, y, width, height, direction, image, collision_box, has_collision=True)
         
         self.weight = 0.1
-        self.velocity = 8
+        self.velocity = 10
         
         dir_radians = -math.radians(self.direction+90)
         
