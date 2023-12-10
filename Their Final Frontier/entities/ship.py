@@ -20,6 +20,8 @@ class Ship(Entity):
     collision_max_cooldown = 60*4
     collision_cooldown_frame = 0
     
+    line_color = (201, 49, 32)
+    
     def __init__(self, x=0, y=0, width=50, height=50, velocity=1, direction=0, lagrange = 0, has_collision = True):
         
         tmp_collision = 0
@@ -143,13 +145,14 @@ class Ship(Entity):
             # Draws lines from x-1 point to x point for all lines in the waypoint_line list.
             # Obviously, it cannot start at zero because x-1 would not exist then    
             for i in range(1, len(self.tmp_waypoint_line)):
-                        
-                x = self.tmp_waypoint_line[i]
-                x_prev = self.tmp_waypoint_line[i-1]
                 
-                
-                #pygame.draw.circle(screen, (255,255,255), (x[0], x[1]), 2)
-                pygame.draw.line(screen, (4, 138, 11), (x_prev[0], x_prev[1]), (x[0], x[1]), 3)
+                if (i%2 == 0):
+                    x = self.tmp_waypoint_line[i]
+                    x_prev = self.tmp_waypoint_line[i-1]
+                    
+                    
+                    #pygame.draw.circle(screen, (255,255,255), (x[0], x[1]), 2)
+                    pygame.draw.line(screen, self.line_color, (x_prev[0], x_prev[1]), (x[0], x[1]), 3)
         
         # TODO: probably just delete this
         # Goes across the entire waypoint list and changes one line into green for a single
@@ -158,10 +161,10 @@ class Ship(Entity):
             x = self.waypoint_line[self.waypoint_line_render_index]
             x_prev = self.waypoint_line[self.waypoint_line_render_index-1]
             
-            pygame.draw.circle(screen, (0,255,0), x,4)
-            pygame.draw.circle(screen, (0,255,0), x_prev,2)
+            pygame.draw.circle(screen, self.line_color, x,4)
+            pygame.draw.circle(screen, self.line_color, x_prev,2)
             
-            pygame.draw.line(screen, (0,255,0), (x_prev[0],x_prev[1]), (x[0], x[1]), 8)
+            pygame.draw.line(screen, self.line_color, (x_prev[0],x_prev[1]), (x[0], x[1]), 8)
             self.waypoint_line_render_index += 1
         
         else:

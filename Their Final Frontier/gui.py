@@ -1,32 +1,29 @@
 import pygame
-import pygame_gui
 
-pygame.init()
-
-window_surface = pygame.display.set_mode((800, 600))
-manager = pygame_gui.UIManager((800, 600))
-
-hello_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 275), (100, 50)),
-                                            text='Say Hello',
-                                            manager=manager)
-
-clock = pygame.time.Clock()
-is_running = True
-
-while is_running:
-    time_delta = clock.tick(60)/1000.0
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            is_running = False
-
-        manager.process_events(event)
-
-    manager.update(time_delta)
-
-    window_surface.fill(pygame.Color('#000000'))
-
-    manager.draw_ui(window_surface)
-
-    pygame.display.update()
-
-pygame.quit()
+class UI:
+    def __init__(self, x, y, image, scale):
+        self.width = scale
+        self.height = scale
+        self.x = x
+        self.y = y
+        self.image = image
+        
+        self.scaled_image = pygame.transform.scale(self.image,(self.width, self.height))
+    
+    def render(self, screen):
+        screen.blit(self.scaled_image, (self.x, self.y))
+        
+    
+class Bullet_UI(UI):
+    def __init__(self, x, y, scale):
+        
+        image = pygame.image.load(r"assets\UI\bullet.png")
+        
+        super().__init__(x, y, image, scale)
+    
+class Waypoint_UI(UI):
+    def __init__(self, x, y, scale):
+        
+        image = pygame.image.load(r"assets\UI\waypoint.png")
+        
+        super().__init__(x, y, image, scale)

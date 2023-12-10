@@ -7,6 +7,7 @@ from entities.waypoint import Waypoint
 from entities.debris import Debris
 from entities.bullet import Bullet
 from entities.particles import Particles
+from gui import *
 import os
 
 class Game():
@@ -25,6 +26,7 @@ class Game():
     def __init__(self, screen, screenX, screenY, clock, running, FPS=60, difficulty = 1, score = 0):
         self.score = score
         self.entities = []
+        self.HUD = []
         
         self.screenX = screenX
         self.screenY = screenY
@@ -55,11 +57,20 @@ class Game():
         self.clock = clock
         self.FPS = FPS
         self.font = pygame.font.Font(r"assets\font\nine0.ttf", 36)
+        self.font_small = pygame.font.Font(r"assets\font\nine0.ttf", 20)
         
         self.debris_list = []
         self.init_debris(difficulty*3, random.randrange(1,1293219)) #TODO: move this
         
-        screen.fill((0,0,0)) 
+        self.surface = pygame.Surface((self.screenX, 200), pygame.SRCALPHA)
+        self.surface.fill((0, 0, 0, 100))
+        #Random background choosing
+        darkness = 100
+        self.background = pygame.image.load(r"assets\\backgrounds\\" + str(random.randint(1,3)) + ".png")
+        self.dark_surface = pygame.Surface(self.background.get_size())
+        self.dark_surface.fill((darkness, darkness, darkness))
+        self.background.blit(self.dark_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        
 
     # FUNCTIONS ===========================================================================
     def update(self):
@@ -83,8 +94,11 @@ class Game():
                     entity.update()
                     
     def render(self, screen):
+        #self.screen.blit(self.background, (0,0))
+        
         for entity in reversed(self.entities):
             entity.render(screen)
+
             
     def createParticles(self, entity):
         for i in range(0,random.randint(10,30)):
@@ -146,7 +160,7 @@ class Game():
         while self.running['value'] and self.game_flag:     
             self.clock.tick(self.FPS)
             print("Current FPS: ", self.clock.get_fps())
-            self.screen.fill((0,0,0)) #just draws black
+            self.screen.blit(self.background, (0,0))
             
             # Ensures that all events in the game are run
             for event in pygame.event.get():
@@ -224,24 +238,56 @@ class Game():
             
             # TODO: PUT THESE INTO CHECKING MODE
             text = self.font.render("Lagrange points: " + str(self.ship.lagrange_points), True, (255, 255, 255))
-            self.screen.blit(text, (20,80)) 
+            self.screen.blit(text, (20,10)) 
             
-            t_waypoint_num = self.font.render("Waypoints Left: " + str(self.player.waypoints), True, (255, 255, 255))
-            self.screen.blit(t_waypoint_num, (20,20))
-            t_bullets_num = self.font.render("Bullets Left: " + str(self.player.bullets), True, (255, 255, 255))
-            self.screen.blit(t_bullets_num, (20,50))
+            # t_waypoint_num = self.font.render("Waypoints Left: " + str(self.player.waypoints), True, (255, 255, 255))
+            # self.screen.blit(t_waypoint_num, (20,20))
+            # t_bullets_num = self.font.render("Bullets Left: " + str(self.player.bullets), True, (255, 255, 255))
+            # self.screen.blit(t_bullets_num, (20,50))
             
             if not self.ship.moving_flag:
                 ship_movement_time = int((self.ship_max_initial_movement - self.ship_initial_movement)/self.FPS)
                 t_ship_move_time = self.font.render("Ship moves in : " + str(ship_movement_time) + "s", True, (255, 255, 255))
-                self.screen.blit(t_ship_move_time, (20,self.screenY - 50))
+                self.screen.blit(t_ship_move_time, (20,self.screenY - 110))
+               
+            self.HUD = []
+            
+            #Bullet HUD
+            tmp_bull = self.player.bullets
+            if self.player.bullets > 13:
+                tmp_bull = 13
                 
+            for i in range(tmp_bull):       
+                self.HUD.append(Bullet_UI(10 + i*40, self.screenY-55,50))
+                
+            #Waypoint HUD
+            tmp_waypoint = self.player.waypoints
+            if self.player.waypoints > 7:
+                tmp_waypoint = 7
+                
+            for i in range(tmp_waypoint):
+                self.HUD.append(Waypoint_UI((self.screenX-60) - i*70, self.screenY-55, 50))
+            
+            self.screen.blit(self.surface, (0, self.screenY-60))  
+            
+            for element in self.HUD:
+                element.render(self.screen)  
+                
+            # Score displaying
+            
             t_score = self.font.render(str(self.score), True, (255, 255, 255))
             
             text_width = t_score.get_width()
             text_x = (self.screenX - text_width) // 2
          
-            self.screen.blit(t_score, (text_x, self.screenY-50))
+            self.screen.blit(t_score, (text_x, self.screenY-40))
+            
+            t_score = self.font_small.render("Score:", True, (255, 255, 255))
+            
+            text_width = t_score.get_width()
+            text_x = (self.screenX - text_width) // 2
+         
+            self.screen.blit(t_score, (text_x, self.screenY-60))
             
             # ====================================================================
 
