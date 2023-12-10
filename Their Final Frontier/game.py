@@ -1,12 +1,12 @@
 import pygame
 import random
-from player import Player
-from ship import Ship
 from lagrange import Lagrange
-from waypoint import Waypoint
-from debris import Debris
-from bullet import Bullet
-from particles import Particles
+from entities.player import Player
+from entities.ship import Ship
+from entities.waypoint import Waypoint
+from entities.debris import Debris
+from entities.bullet import Bullet
+from entities.particles import Particles
 import os
 
 class Game():
