@@ -67,25 +67,25 @@ class Menu:
 
 # CODE FOR TESTING, JUST RUN THE FILE TO SEE IF YOUR CHANGES WORK ======================
 
-pygame.init()
+# pygame.init()
 
-clock = pygame.time.Clock()
-FPS = 60
+# clock = pygame.time.Clock()
+# FPS = 60
 
-# Creates the display
-screenX = 1280
-screenY = 720
-screen = pygame.display.set_mode((screenX,screenY))
+# # Creates the display
+# screenX = 1280
+# screenY = 720
+# screen = pygame.display.set_mode((screenX,screenY))
 
-# Title and Icon
-pygame.display.set_caption("Their Final Frontier Alpha")
+# # Title and Icon
+# pygame.display.set_caption("Their Final Frontier Alpha")
 
-# Variables
-running = {'value': True}
+# # Variables
+# running = {'value': True}
 
-# Object Initializations
-gui_manager = pygame_gui.UIManager((screenX,screenY))
+# # Object Initializations
+# gui_manager = pygame_gui.UIManager((screenX,screenY))
 
-main_menu = Menu(gui_manager, (screenX, screenY), screen, running, clock)
+# main_menu = Menu(gui_manager, (screenX, screenY), screen, running, clock)
 
-main_menu.mainloop()
+# main_menu.mainloop()

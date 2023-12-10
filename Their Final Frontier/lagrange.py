@@ -32,8 +32,7 @@ class Lagrange:
             li_var = 1 
             for j in range(n):  
                 if j != i:   
-                    updated_li_var = (target_x - self.coordinates[sorted_indices[j]][0]) / (self.coordinates[sorted_indices[i]][0] - self.coordinates[sorted_indices[j]][0])
-                    li_var *= updated_li_var
+                    li_var *= (target_x - self.coordinates[sorted_indices[j]][0]) / (self.coordinates[sorted_indices[i]][0] - self.coordinates[sorted_indices[j]][0])
             
             # Getting Lagrange. f(x) = Li(x)f(Xi) where f(X) = target_y.
             target_y = li_var * self.coordinates[sorted_indices[i]][1]

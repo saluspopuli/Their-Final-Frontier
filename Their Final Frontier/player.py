@@ -139,14 +139,13 @@ class Player(Entity):
             self.can_move = False
             
             self.collision_shake_frame = 0
-            
-            self.state += 2
-            self.state_save += 2
+                      
         else:
             self.collision_shake_frame = self.collision_max_shake_frame/4
         
         if self.collision_cooldown_frame == 0:
             if not isinstance(entity, Bullet):
+                self.state_save += 2
                 self.lives -= 1     
                 self.collision_cooldown_frame = self.collision_max_cooldown_frame
     

@@ -33,10 +33,19 @@ if __name__ == "__main__":
        
     #main_menu.mainloop()
     difficulty = 2
-
+    score = 0
+    tmp_score = 0
+    
     while running:
-        game = Game(screen, screenX, screenY, clock, running, FPS, difficulty)
-        if game.mainloop() and game.game_flag:
+        game = Game(screen, screenX, screenY, clock, running, FPS, difficulty, score)
+
+        try:
+            game_state, tmp_score = game.mainloop()
+        except:
+            break
+        
+        score += tmp_score
+        if game.game_flag:
             difficulty += 1
         else:
             break

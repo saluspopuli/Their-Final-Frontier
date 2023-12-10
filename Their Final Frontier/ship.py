@@ -57,7 +57,7 @@ class Ship(Entity):
             
             if self.moving_flag:
                 info = pygame.display.Info()
-                self.move_ship(info.current_w, info.current_h/2)
+                self.move_ship(info.current_w + 300, info.current_h/2)
                 
         elif self.can_move:
             

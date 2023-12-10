@@ -22,7 +22,8 @@ class Game():
     ship_max_initial_movement = 60*8
     ship_initial_movement = 0
     
-    def __init__(self, screen, screenX, screenY, clock, running, FPS=60, difficulty = 1):
+    def __init__(self, screen, screenX, screenY, clock, running, FPS=60, difficulty = 1, score = 0):
+        self.score = score
         self.entities = []
         
         self.screenX = screenX
@@ -41,6 +42,10 @@ class Game():
         waypoints = int(waypoints + difficulty/3)  
         bullets = 6
         bullets = int(bullets + difficulty/2)
+        
+        self.max_waypoints = waypoints
+        self.max_bullets = bullets
+        
         self.player = Player(self.init_player_pos[0], screenY/2, direction=self.init_player_dir,waypoints= waypoints, bullets = bullets)
         
         self.entities.append(self.player)
@@ -49,7 +54,7 @@ class Game():
         self.screen = screen
         self.clock = clock
         self.FPS = FPS
-        self.font = pygame.font.Font(None, 36)
+        self.font = pygame.font.Font(r"assets\font\nine0.ttf", 36)
         
         self.debris_list = []
         self.init_debris(difficulty*3, random.randrange(1,1293219)) #TODO: move this
@@ -195,7 +200,12 @@ class Game():
 
             # If ship goes beyond right side of screen then you have won
             if self.ship.x > self.screenX + 100:
-                return True
+                score = 0
+                score += 50 * (self.max_bullets - (self.max_bullets - self.player.bullets))
+                score += 50 * (self.max_waypoints - (self.max_waypoints - self.player.waypoints))
+                tmp_screenY = self.screenY / 2
+                score += 200 + int((tmp_screenY - abs(self.ship.y-tmp_screenY))*0.555556)
+                return True, score
             
             # =================================================================
             
@@ -225,6 +235,13 @@ class Game():
                 ship_movement_time = int((self.ship_max_initial_movement - self.ship_initial_movement)/self.FPS)
                 t_ship_move_time = self.font.render("Ship moves in : " + str(ship_movement_time) + "s", True, (255, 255, 255))
                 self.screen.blit(t_ship_move_time, (20,self.screenY - 50))
+                
+            t_score = self.font.render(str(self.score), True, (255, 255, 255))
+            
+            text_width = t_score.get_width()
+            text_x = (self.screenX - text_width) // 2
+         
+            self.screen.blit(t_score, (text_x, self.screenY-50))
             
             # ====================================================================
 
