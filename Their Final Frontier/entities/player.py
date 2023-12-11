@@ -38,7 +38,7 @@ class Player(Entity):
                  waypoints = 4,
                  bullets = 6):
         
-        image = pygame.image.load("assets\player\player1.png")
+        image = pygame.image.load("assets\player\player1.png").convert_alpha()
         
         tmp_collision = 0
         collision_box_scale = 0.6

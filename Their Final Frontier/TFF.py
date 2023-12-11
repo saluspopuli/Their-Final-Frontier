@@ -17,7 +17,7 @@ screenY = 720
 screen = pygame.display.set_mode((screenX,screenY))
 
 # Title and Icon
-pygame.display.set_caption("Their Final Frontier Alpha")
+pygame.display.set_caption("Their Final Frontier 1.0")
 window_icon = pygame.image.load("assets\window_icon.png")  # Update the file path here
 pygame.display.set_icon(window_icon)
 
@@ -43,20 +43,21 @@ if __name__ == "__main__":
     
     pygame.mixer.init()
     sound = pygame.mixer.Sound(r"assets\sound\bg_loop\bg_loop.wav")
-    loop_channel = pygame.mixer.Channel(3)
+    loop_channel = pygame.mixer.Channel(4)
     loop_channel.set_volume(1.5)
     loop_channel.play(sound,-1)
     
     checking = main_menu.mainloop()
     
     while running['value']:
-        
+        game = None
         game = Game(screen, screenX, screenY, clock, running, FPS, difficulty, score, not checking)
         
         game_state, tmp_score = game.mainloop()
         
         if running['value']:      
             game.fadeout()
+            
         
         score += tmp_score
         if game.game_flag:

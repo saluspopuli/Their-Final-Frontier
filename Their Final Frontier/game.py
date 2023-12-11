@@ -47,6 +47,9 @@ class Game():
         self.sounds[4].set_volume(0.6)
         self.rumble_channel = pygame.mixer.Channel(2)
         self.rumble_volume = 0.35
+        self.rumble2_channel = pygame.mixer.Channel(3)
+        self.rumble2_volume = 0.35
+        self.rumble2_channel.set_volume(self.rumble2_volume)
         
         self.ship = Ship(self.init_ship_pos[0],
                          screenY/2,
@@ -81,7 +84,7 @@ class Game():
         self.surface.fill((0, 0, 0, 100))
         #Random background choosing
         darkness = 100
-        self.background = pygame.image.load(r"assets\\backgrounds\\" + str(random.randint(1,3)) + ".png")
+        self.background = pygame.image.load(r"assets\\backgrounds\\" + str(random.randint(1,3)) + ".png").convert_alpha()
         self.dark_surface = pygame.Surface(self.background.get_size())
         self.dark_surface.fill((darkness, darkness, darkness))
         self.background.blit(self.dark_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
@@ -95,6 +98,7 @@ class Game():
     def update(self):
         
         for entity in reversed(self.entities):
+
             if entity.has_collision and not isinstance(entity, Debris):
                     entity.check_collision(self.entities)
             
@@ -205,11 +209,15 @@ class Game():
             self.screen.blit(dark_surface,(0,0))
             pygame.display.update()
         
+        self.entities = None
+        
     def mainloop(self):   
         
         #test_var = 0 #TODO: ONLY USE FOR TESTING
-        #self.player.bullets = 10000
-        #self.player.waypoints = 10000
+        if self.checking:
+            self.player.bullets = 100
+            self.player.waypoints = 100
+        
         pygame.event.set_allowed([pygame.QUIT,pygame.KEYDOWN])
         while self.running['value'] and self.game_flag:     
             self.clock.tick(self.FPS)
@@ -289,11 +297,17 @@ class Game():
             
             self.rumble_channel.set_volume(self.rumble_volume)
             
-            if ((self.ship.can_move and self.ship.moving_flag) or self.player.is_moving) and not self.rumble_channel.get_busy():
+            if (self.ship.can_move and self.ship.moving_flag) and not self.rumble_channel.get_busy():
                 self.rumble_channel.play(self.sounds[5])
             
-            if not ( self.ship.can_move and self.ship.moving_flag) and not self.player.is_moving:
+            if not ( self.ship.can_move and self.ship.moving_flag):
                 self.rumble_channel.stop()
+                
+            if self.player.is_moving and not self.rumble2_channel.get_busy():
+                self.rumble2_channel.set_volume(self.rumble2_volume)
+                self.rumble2_channel.play(self.sounds[5])
+            elif not self.player.is_moving:
+                self.rumble2_channel.stop()
             
             # =================================================================
               
@@ -334,11 +348,11 @@ class Game():
         
         #Bullet HUD
         tmp_bull = self.player.bullets
-        if self.player.bullets > 13:
-            tmp_bull = 13
+        if self.player.bullets > 12:
+            tmp_bull = 12
             
         for i in range(tmp_bull):       
-            self.HUD.append(Bullet_UI(10 + i*40, self.screenY-55,50))
+            self.HUD.append(Bullet_UI(10 + i*45, self.screenY-55,50))
             
         #Waypoint HUD
         tmp_waypoint = self.player.waypoints

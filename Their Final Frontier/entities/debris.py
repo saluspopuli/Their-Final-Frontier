@@ -21,7 +21,7 @@ class Debris(Entity):
         if has_collision:
             tmp_collision = pygame.Rect(x, y, width-(width * 0.4), height- (width * 0.4))
         
-        image = pygame.image.load(image)
+        image = pygame.image.load(image).convert_alpha()
         
         super().__init__(x, y, width, height, direction, image, tmp_collision, has_collision)
         

@@ -139,8 +139,6 @@ class Menu:
         intro_overlay = pygame.image.load(r"assets\menu\Intro.jpg")
         self.screen.blit(intro_overlay, (0, 0))
         
-        print(self.previous)
-        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()

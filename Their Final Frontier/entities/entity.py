@@ -32,7 +32,7 @@ class Entity:
         file_list = sorted(os.listdir(folder))
         for filename in file_list:
             if filename.endswith(".png"):
-                image = pygame.image.load(os.path.join(folder, filename))
+                image = pygame.image.load(os.path.join(folder, filename)).convert_alpha()
                 self.scaled_image.append(pygame.transform.scale(image, (self.width, self.height)))
 
     

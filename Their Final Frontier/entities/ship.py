@@ -28,7 +28,7 @@ class Ship(Entity):
         if has_collision:
             tmp_collision = pygame.Rect(x, y, width-(width * 0.4), height- (width * 0.4))    
             
-        image = pygame.image.load("assets\ship\ship1.png")       
+        image = pygame.image.load("assets\ship\ship1.png").convert_alpha()       
         super().__init__(x, y, width, height, direction, image, tmp_collision, True)
         self.velocity = velocity
         self.lagrange = lagrange
