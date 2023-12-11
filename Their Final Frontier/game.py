@@ -25,6 +25,7 @@ class Game():
     
     def __init__(self, screen, screenX, screenY, clock, running, FPS=60, difficulty = 1, score = 0):
         self.score = score
+        self.tmp_score = 0
         self.entities = []
         self.HUD = []
         
@@ -41,7 +42,7 @@ class Game():
         self.sounds.append(pygame.mixer.Sound(r"assets\sound\place.wav"))       # 4
         self.sounds.append(pygame.mixer.Sound(r"assets\sound\rumbling.wav"))    # 5
         
-        self.sounds[3].set_volume(0.8)
+        self.sounds[3].set_volume(0.5)
         self.sounds[4].set_volume(0.6)
         self.rumble_channel = pygame.mixer.Channel(2)
         self.rumble_volume = 0.35
@@ -90,8 +91,8 @@ class Game():
     def update(self):
         
         for entity in reversed(self.entities):
-            if entity.has_collision:
-                entity.check_collision(self.entities)
+            if entity.has_collision and not isinstance(entity, Debris):
+                    entity.check_collision(self.entities)
         
         for entity in self.entities:
             if isinstance(entity, Bullet) and (entity.x > self.screenX or entity.x < 0 or entity.y > self.screenY or entity.y < 0):
@@ -107,6 +108,7 @@ class Game():
                         
                         if not isinstance(entity, Particles):
                             self.sounds[0].play()
+                            self.tmp_score += 20
                 else:
                     entity.update()
                     
@@ -139,6 +141,8 @@ class Game():
             self.clock.tick(self.FPS)
             
         self.game_flag = False
+        
+        return False, self.tmp_score
              
         
     def init_debris(self, number, randomseed):
@@ -202,7 +206,7 @@ class Game():
         #test_var = 0 #TODO: ONLY USE FOR TESTING
         #self.player.bullets = 10000
         #self.player.waypoints = 10000
-        
+        pygame.event.set_allowed([pygame.QUIT,pygame.KEYDOWN])
         while self.running['value'] and self.game_flag:     
             self.clock.tick(self.FPS)
             print("Current FPS: ", self.clock.get_fps())
@@ -262,12 +266,11 @@ class Game():
 
             # If ship goes beyond right side of screen then you have won
             if self.ship.x > self.screenX + 100:
-                score = 0
-                score += 50 * (self.max_bullets - (self.max_bullets - self.player.bullets))
-                score += 50 * (self.max_waypoints - (self.max_waypoints - self.player.waypoints))
+                self.tmp_score += 30 * self.player.bullets
+                self.tmp_score += 50 * self.player.waypoints
                 tmp_screenY = self.screenY / 2
-                score += 200 + int((tmp_screenY - abs(self.ship.y-tmp_screenY))*0.555556)
-                return True, score
+                self.tmp_score += 200 + int((tmp_screenY - abs(self.ship.y-tmp_screenY))*0.555556)
+                return True, self.tmp_score
             
             # =================================================================
             
@@ -338,7 +341,7 @@ class Game():
             
         # Score displaying
         
-        t_score = self.font.render(str(self.score), True, (255, 255, 255))
+        t_score = self.font.render(str(self.score + self.tmp_score), True, (255, 255, 255))
         
         text_width = t_score.get_width()
         text_x = (self.screenX - text_width) // 2

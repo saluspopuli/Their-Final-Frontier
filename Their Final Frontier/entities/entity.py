@@ -36,11 +36,12 @@ class Entity:
                 self.scaled_image.append(pygame.transform.scale(image, (self.width, self.height)))
 
     
-    def check_collision(self, entities):     
-        for entity in entities:
-            if entity.has_collision and entity is not self:
-                if self.collision_box.colliderect(entity.collision_box):
-                    self.handle_collision(entity)
+    def check_collision(self, entities):  
+        if self.has_collision:   
+            for entity in entities:
+                if entity.has_collision and entity is not self:
+                    if self.collision_box.colliderect(entity.collision_box):
+                        self.handle_collision(entity)
                     
     def handle_collision(self, entity):
         # Redefine this function in the objects otherwise it will do nothing
