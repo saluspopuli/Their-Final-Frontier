@@ -42,6 +42,10 @@ class Ship(Entity):
         
         self.state = 0
         self.state_save = 0
+        
+        self.checking = False
+        self.font_small = pygame.font.Font(r"assets\font\nine0.ttf", 25)
+        self.font_small.bold = True
 
 
     def update(self):
@@ -164,6 +168,10 @@ class Ship(Entity):
             
             pygame.draw.circle(screen, self.line_color, x,4)
             pygame.draw.circle(screen, self.line_color, x_prev,2)
+            
+            if self.checking:
+                text = self.font_small.render("({:.3f}, {:.3f})".format(x[0], x[1]), True, (0, 255, 0))
+                screen.blit(text, (x[0], x[1]))
             
             pygame.draw.line(screen, self.line_color, (x_prev[0],x_prev[1]), (x[0], x[1]), 8)
             self.waypoint_line_render_index += 1

@@ -44,11 +44,7 @@ if __name__ == "__main__":
         loop_channel.set_volume(1.5)
         loop_channel.play(sound,-1)
         
-        try:
-            game_state, tmp_score = game.mainloop()
-        except:
-            break
-        
+        game_state, tmp_score = game.mainloop()      
         game.fadeout()
         
         score += tmp_score

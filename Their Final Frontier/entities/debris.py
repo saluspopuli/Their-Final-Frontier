@@ -36,21 +36,13 @@ class Debris(Entity):
         self.collision_box.center = (self.x, self.y)
         
         if self.is_collided:
-            self.pull(-self.collide_direction+180, self.collide_velocity)
+            self.x += self.velocity * self.dir_cos
+            self.y += self.velocity * self.dir_sin
             self.collide_velocity -= 0.006
             
             if self.collide_velocity < 0.001:
                 self.collide_velocity = 0
-                self.is_collided = False
-            
-    
-    def pull(self, direction, velocity):
-        dir_radians = -math.radians(direction)
-        dir_cos = math.cos(dir_radians)
-        dir_sin = math.sin(dir_radians)
-
-        self.x += velocity * dir_cos
-        self.y += velocity * dir_sin 
+                self.is_collided = False        
         
     def handle_collision(self, entity):
         self.sound.play()
@@ -58,7 +50,11 @@ class Debris(Entity):
         dx = entity.x - self.x
         dy = entity.y - self.y
 
-        self.collide_direction = math.degrees(math.atan2(dy, dx))
+        collide_direction = math.degrees(math.atan2(dy, dx))
+        dir_radians = math.radians(collide_direction+180)
+        self.dir_cos = math.cos(dir_radians)
+        self.dir_sin = math.sin(dir_radians)
+        
         
         self.lives -= 1
         

@@ -23,11 +23,12 @@ class Game():
     ship_max_initial_movement = 60*8
     ship_initial_movement = 0
     
-    def __init__(self, screen, screenX, screenY, clock, running, FPS=60, difficulty = 1, score = 0):
+    def __init__(self, screen, screenX, screenY, clock, running, FPS=60, difficulty = 1, score = 0, checking = False):
         self.score = score
         self.tmp_score = 0
         self.entities = []
         self.HUD = []
+        self.waypoint_list = []
         
         self.screenX = screenX
         self.screenY = screenY
@@ -60,9 +61,6 @@ class Game():
         bullets = 6
         bullets = int(bullets + difficulty/2)
         
-        self.max_waypoints = waypoints
-        self.max_bullets = bullets
-        
         self.player = Player(self.init_player_pos[0], screenY/2, direction=self.init_player_dir,waypoints= waypoints, bullets = bullets)
         
         self.entities.append(self.player)
@@ -73,6 +71,8 @@ class Game():
         self.FPS = FPS
         self.font = pygame.font.Font(r"assets\font\nine0.ttf", 36)
         self.font_small = pygame.font.Font(r"assets\font\nine0.ttf", 20)
+        self.font_small_bold = pygame.font.Font(r"assets\font\nine0.ttf", 25)
+        self.font_small_bold.bold = True
         
         self.debris_list = []
         self.init_debris(difficulty*3, random.randrange(1,1293219)) #TODO: move this
@@ -86,6 +86,10 @@ class Game():
         self.dark_surface.fill((darkness, darkness, darkness))
         self.background.blit(self.dark_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
         
+        self.checking = checking
+        if checking:
+            self.ship.checking = True
+        
 
     # FUNCTIONS ===========================================================================
     def update(self):
@@ -93,10 +97,12 @@ class Game():
         for entity in reversed(self.entities):
             if entity.has_collision and not isinstance(entity, Debris):
                     entity.check_collision(self.entities)
-        
-        for entity in self.entities:
+            
+            if isinstance(entity, Debris) and entity.is_collided:
+                entity.check_collision(self.entities)
+                    
             if isinstance(entity, Bullet) and (entity.x > self.screenX or entity.x < 0 or entity.y > self.screenY or entity.y < 0):
-                self.entities.remove(entity)
+                self.entities.remove(entity)              
             else:
                 if entity.lives <= 0:        
                     if not isinstance(entity, Particles):
@@ -141,8 +147,6 @@ class Game():
             self.clock.tick(self.FPS)
             
         self.game_flag = False
-        
-        return False, self.tmp_score
              
         
     def init_debris(self, number, randomseed):
@@ -224,7 +228,9 @@ class Game():
                     # Ensures new coord is not in the same place as another coord so that it doesn't
                     # throw an error
                     if not any(coord[0] == self.player.x for coord in self.ship.lagrange.coordinates):
-                        self.entities.append(Waypoint(self.player.x,self.player.y))
+                        tmp_waypoint = Waypoint(self.player.x,self.player.y)
+                        self.waypoint_list.append(tmp_waypoint)
+                        self.entities.append(tmp_waypoint)
                         self.ship.lagrange.add_point(self.player.x,self.player.y)
                         self.ship.draw_waypoint_line(self.screenX)
                         self.player.waypoints-=1
@@ -245,13 +251,13 @@ class Game():
                         self.screen = pygame.display.set_mode((self.screenX, self.screenY), pygame.FULLSCREEN)
                     
                 # EVENTS FOR DEBUGGING ===============================================================  
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_p: #TODO: placeholder
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_p and self.checking: #TODO: placeholder
                     self.ship.moving_flag = True
                 
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT: #TODO: placeholder
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT and self.checking: #TODO: placeholder
                     self.ship.change_lagrange_points(False, self.screenX)
                     
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT: #TODO: placeholder
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT and self.checking: #TODO: placeholder
                     self.ship.change_lagrange_points(True, self.screenX)
             
             # OTHER GAME CHECKS ===============================================
@@ -299,12 +305,20 @@ class Game():
             if not self.game_flag:
                 self.game_over()
                 
+        return False, self.tmp_score
+                
     def misc_ui_elements(self):
         # UI ELEMENT RENDERING ============================================
                 
-        # TODO: PUT THESE INTO CHECKING MODE
-        text = self.font.render("Lagrange points: " + str(self.ship.lagrange_points), True, (255, 255, 255))
-        self.screen.blit(text, (20,10)) 
+        if self.checking:
+            text = self.font.render("Lagrange points: " + str(self.ship.lagrange_points), True, (255, 255, 255))
+            self.screen.blit(text, (20,10))
+            
+            for waypoint in self.waypoint_list:
+                text = self.font_small_bold.render("({:.3f}, {:.3f})".format(waypoint.x, waypoint.y), True, (0, 255, 0))
+                self.screen.blit(text, (waypoint.x, waypoint.y - 10))
+            
+            
         
         # t_waypoint_num = self.font.render("Waypoints Left: " + str(self.player.waypoints), True, (255, 255, 255))
         # self.screen.blit(t_waypoint_num, (20,20))
@@ -356,3 +370,4 @@ class Game():
         self.screen.blit(t_score, (text_x, self.screenY-60))
         
         # ====================================================================
+    

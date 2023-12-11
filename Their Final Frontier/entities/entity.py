@@ -42,6 +42,7 @@ class Entity:
                 if entity.has_collision and entity is not self:
                     if self.collision_box.colliderect(entity.collision_box):
                         self.handle_collision(entity)
+                        entity.handle_collision(self)
                     
     def handle_collision(self, entity):
         # Redefine this function in the objects otherwise it will do nothing
