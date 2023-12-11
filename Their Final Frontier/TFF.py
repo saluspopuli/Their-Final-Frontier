@@ -1,7 +1,9 @@
 import pygame
 import pygame_gui
+import os
 from game import Game
 from menu import Menu
+from button import Button
 
 # Pygame stuff ========================================================================
 pygame.init()
@@ -25,6 +27,9 @@ running = {'value': True}
 # Object Initializations
 gui_manager = pygame_gui.UIManager((screenX,screenY))
 
+running = {'value': True}
+
+
 main_menu = Menu(gui_manager, (screenX, screenY), screen, running, clock)
 
 
@@ -39,19 +44,26 @@ if __name__ == "__main__":
     pygame.mixer.init()
     sound = pygame.mixer.Sound(r"assets\sound\bg_loop\bg_loop.wav")
     loop_channel = pygame.mixer.Channel(3)
-    while running:
-        game = Game(screen, screenX, screenY, clock, running, FPS, difficulty, score)
-        loop_channel.set_volume(1.5)
-        loop_channel.play(sound,-1)
+    loop_channel.set_volume(1.5)
+    loop_channel.play(sound,-1)
+    
+    checking = main_menu.mainloop()
+    
+    while running['value']:
         
-        game_state, tmp_score = game.mainloop()      
-        game.fadeout()
+        game = Game(screen, screenX, screenY, clock, running, FPS, difficulty, score, not checking)
+        
+        game_state, tmp_score = game.mainloop()
+        
+        if running['value']:      
+            game.fadeout()
         
         score += tmp_score
         if game.game_flag:
             difficulty += 1
         else:
-            break
+            main_menu = Menu(gui_manager, (screenX, screenY), screen, running, clock)
+            checking = main_menu.mainloop()
             
     
     
