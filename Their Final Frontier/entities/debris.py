@@ -43,15 +43,23 @@ class Debris(Entity):
             if self.collide_velocity < 0.001:
                 self.collide_velocity = 0
                 self.is_collided = False        
-        
+    
+    def check_collision(self, entities):
+        from entities.bullet import Bullet
+        for entity in entities:
+            if entity.has_collision and entity is not self and not isinstance(entity, Bullet):
+                if self.collision_box.colliderect(entity.collision_box):
+                    self.handle_collision(entity)    
+                    entity.handle_collision(self)
+     
     def handle_collision(self, entity):
         self.sound.play()
         
         dx = entity.x - self.x
         dy = entity.y - self.y
 
-        collide_direction = math.degrees(math.atan2(dy, dx))
-        dir_radians = math.radians(collide_direction+180)
+        self.collide_direction = math.degrees(math.atan2(dy, dx))
+        dir_radians = math.radians(self.collide_direction+180)
         self.dir_cos = math.cos(dir_radians)
         self.dir_sin = math.sin(dir_radians)
         
@@ -65,7 +73,7 @@ class Debris(Entity):
             
         
         self.is_collided = True
-        
+         
     def render(self, screen):
         
         rotated_image = pygame.transform.rotate(self.scaled_image[self.state], self.sprite_direction)

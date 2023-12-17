@@ -1,4 +1,2 @@
 Todo:
-    - Do the main menu
-
-    - Add a setting to switch between normal play mode and checking mode
+    - Fix bullet getting deleted

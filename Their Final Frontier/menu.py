@@ -1,6 +1,5 @@
 import os
 import pygame
-import pygame_gui
 from button import Button
 
 # Variables
@@ -34,6 +33,7 @@ class Menu:
         self.previous = 0
           
         self.sound = pygame.mixer.Sound(r"assets\sound\place.wav")
+        self.sound.set_volume(0.3)
         
         image = pygame.image.load(r"assets\player\player1.png")
         image = pygame.transform.rotate(image, -90)
@@ -48,11 +48,6 @@ class Menu:
         while self.running['value'] and self.menu_flag:
             
             self.time_delta = self.clock.tick(60)/1000.0
-            for event in pygame.event.get():
-                # Quits game if pygame detects the quit event type
-                if event.type == pygame.QUIT:
-                    self.running['value'] = False
-                self.gui_manager.process_events(event)
             
             #THIS MENU WILL CONSTANTLY RUN AGAIN AND AGAIN SO NEVER EVER USE 
             #FOR LOOPS THAT ARE INDEFINITE

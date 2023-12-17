@@ -21,6 +21,8 @@ class Bullet(Entity):
         
         self.dir_cos = math.cos(dir_radians)
         self.dir_sin = math.sin(dir_radians)
+        
+        self.lives = 1
     
     def update(self):
         
@@ -35,7 +37,7 @@ class Bullet(Entity):
         for entity in entities:
             if entity.has_collision and entity is not self and not isinstance(entity,Player):
                 if self.collision_box.colliderect(entity.collision_box):
-                    entities.remove(self)
+                    self.lives = 0
                     entity.handle_collision(self)
     
     def render(self, screen):

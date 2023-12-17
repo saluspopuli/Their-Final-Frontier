@@ -37,7 +37,7 @@ main_menu = Menu(gui_manager, (screenX, screenY), screen, running, clock)
 if __name__ == "__main__":
        
     #main_menu.mainloop()
-    difficulty = 2
+    difficulty = 2 #default: 2
     score = 0
     tmp_score = 0
     
@@ -47,24 +47,39 @@ if __name__ == "__main__":
     loop_channel.set_volume(1.5)
     loop_channel.play(sound,-1)
     
-    checking = main_menu.mainloop()
+    try:
+        checking = main_menu.mainloop()
+    except:
+        checking = False
     
-    while running['value']:
-        game = None
-        game = Game(screen, screenX, screenY, clock, running, FPS, difficulty, score, not checking)
-        
-        game_state, tmp_score = game.mainloop()
-        
-        if running['value']:      
-            game.fadeout()
+    try:
+        while running['value']:
+            game = None
+            game = Game(screen, screenX, screenY, clock, running, FPS, difficulty, score, not checking)
             
-        
-        score += tmp_score
-        if game.game_flag:
-            difficulty += 1
-        else:
-            main_menu = Menu(gui_manager, (screenX, screenY), screen, running, clock)
-            checking = main_menu.mainloop()
+            try:
+                game_state, tmp_score = game.mainloop()
+                
+                if running['value']:      
+                    game.fadeout()
+            except:
+                game_state = True
+                tmp_score = 0  
+            
+                
+            score += tmp_score
+            if game.game_flag:
+                difficulty += 1
+            else:
+                main_menu = Menu(gui_manager, (screenX, screenY), screen, running, clock)
+                try:
+                    checking = main_menu.mainloop()
+                    difficulty = 2
+                    tmp_score = 0
+                except:
+                    checking = False
+    except:
+        pass
             
     
     

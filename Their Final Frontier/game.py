@@ -60,9 +60,9 @@ class Game():
         
         self.ship.init_tmp_waypoint_line(screenX)
         waypoints = 3  
-        waypoints = int(waypoints + difficulty/3)  
+        waypoints = int(waypoints + difficulty/4)  
         bullets = 6
-        bullets = int(bullets + difficulty/2)
+        bullets = int(bullets + difficulty/5)
         
         self.player = Player(self.init_player_pos[0], screenY/2, direction=self.init_player_dir,waypoints= waypoints, bullets = bullets)
         
@@ -100,13 +100,18 @@ class Game():
         for entity in reversed(self.entities):
 
             if entity.has_collision and not isinstance(entity, Debris):
-                    entity.check_collision(self.entities)
+                entity.check_collision(self.entities)
             
             if isinstance(entity, Debris) and entity.is_collided:
                 entity.check_collision(self.entities)
-                    
-            if isinstance(entity, Bullet) and (entity.x > self.screenX or entity.x < 0 or entity.y > self.screenY or entity.y < 0):
-                self.entities.remove(entity)              
+            
+            if isinstance(entity,Bullet) and entity.lives <= 0:
+                self.entities.remove(entity)     
+            elif isinstance(entity, Bullet) and (entity.x > self.screenX or entity.x < 0 or entity.y > self.screenY or entity.y < 0):
+                try:
+                    self.entities.remove(entity)
+                except:
+                    print("Error 001: I don't know why this happens, shouldn't break game")         
             else:
                 if entity.lives <= 0:        
                     if not isinstance(entity, Particles):
@@ -261,6 +266,7 @@ class Game():
                 # EVENTS FOR DEBUGGING ===============================================================  
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_p and self.checking: #TODO: placeholder
                     self.ship.moving_flag = True
+                    self.ship.velocity = 5
                 
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT and self.checking: #TODO: placeholder
                     self.ship.change_lagrange_points(False, self.screenX)
