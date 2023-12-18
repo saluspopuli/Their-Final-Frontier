@@ -76,6 +76,7 @@ if __name__ == "__main__":
                     checking = main_menu.mainloop()
                     difficulty = 2
                     tmp_score = 0
+                    score = 0
                 except:
                     checking = False
     except:
